@@ -6,5 +6,6 @@ public record TeacherConsult(
     @NotBlank
     @Email
     String email
+    
 ) {}
 
