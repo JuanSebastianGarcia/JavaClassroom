@@ -1,6 +1,6 @@
 package co.uniquindio.ingesis.resource;
 
-import co.uniquindio.ingesis.dto.studentResource.StudentRegisterDto;
+import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -18,30 +18,27 @@ public class StudentResource {
     /*
      * service to access student
      */
-    private final StudenService studentService;
+    //private final StudenService studentService;
 
 
     /*
      * Constructor with dependency injectionm
      */
-    public StudentResource(StudenService studentService){
-        this.studentService = studentService;
-    }
 
 
 
-    public Response addStudent(@Valid StudentRegisterDto studentRegisterDto){
+    public Response addStudent(@Valid StudentDto studentRegisterDto){
         /*
          * this controller manage the creation of a new student
         */
         try{
 
-            String respone = StudenService.
+            String response = "";
 
-            return Response.status(Response.Status.CREATED).entity(respone).build();
+            return Response.status(Response.Status.CREATED).entity(response).build();
         }
-        catch(){
-
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
         
 
