@@ -8,6 +8,8 @@
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -62,24 +64,34 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-postgresql</artifactId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
-        </dependency>
-        <dependency>
-             <groupId>io.quarkus</groupId>
-             <artifactId>quarkus-hibernate-orm-panache</artifactId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId> 
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.22</version> 
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
 
-
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>5.1.0</version> <!-- Usa la última versión disponible -->
+        </dependency>
+    
     </dependencies>
 
     <build>
@@ -100,15 +112,15 @@
                     </execution>
                 </executions>
             </plugin>
-<plugin>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <version>${compiler-plugin.version}</version>
-    <configuration>
-        <source>17</source>
-        <target>17</target>
-        <release>17</release>
-    </configuration>
-</plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler-plugin.version}</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <release>17</release>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
