@@ -17,14 +17,14 @@ public class StudentRepository implements PanacheRepository<Student> {
 
 
     /*
-     * thi method remove a student by document
-     * 
-     * return true if the student has delete
+     * this method search a student by dorcument
      */
-    public boolean removeByDocument(String document){
-        long deletedCount = delete("document", document); 
-        return deletedCount > 0; 
+    public Optional<Student> findByEmail(String email) {
+        return find("email", email).firstResultOptional();
     }
+
+
+
 
 
 }
