@@ -22,7 +22,7 @@ public class Teacher implements Serializable {
     private String cedula;
 
     @Column(name = "nombre_profesor", nullable = false, updatable = false)
-    private String nombre;
+    private String name;
 
     @Column(name = "email_profesor", nullable = false, unique = true)
     private String email;

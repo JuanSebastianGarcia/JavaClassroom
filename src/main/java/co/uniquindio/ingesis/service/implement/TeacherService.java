@@ -2,8 +2,8 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
 
-import jakarta.inject.Inject; // Asegúrate de importar esta
-
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.exception.TeacherExistException;
 import co.uniquindio.ingesis.exception.TeacherNotExistException;
@@ -29,6 +29,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method adds a new teacher and validates it
      */
     @Override
+    @Transactional
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
 
         Teacher new_teacher = buildTeacherFromDto(teacherDto);
@@ -99,7 +100,7 @@ public class TeacherService implements TeacherServiceInterface {
 
         Teacher teacher = teacher_optional.get();
 
-        teacher.setNombre(teacherDto.name());
+        teacher.setName(teacherDto.name());
         teacher.setEmail(teacherDto.email());
         teacher.setPassword(hashPassword(teacherDto.password()));
 
@@ -128,6 +129,6 @@ public class TeacherService implements TeacherServiceInterface {
      * This method builds a TeacherDto from a Teacher
      */
     private TeacherDto buildDtoFromTeacher(Teacher teacher) {
-        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getNombre(), teacher.getEmail(), "");
+        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "");
     }
 }
