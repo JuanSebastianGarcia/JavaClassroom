@@ -44,7 +44,6 @@ nb-configuration.xml
 # TLS Certificates
 .certs/
 
-# Ignorar archivos YAML
 *.yml
 
 *.properties

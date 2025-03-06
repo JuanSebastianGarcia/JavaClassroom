@@ -8,7 +8,23 @@ import java.util.Optional;
 @ApplicationScoped
 public class StudentRepository implements PanacheRepository<Student> {
 
-    public Optional<Student> findByCedula(String cedula) {
-        return find("cedula", cedula).firstResultOptional();
+    /*
+     * this method search a student by dorcument
+     */
+    public Optional<Student> findByCedula(String document) {
+        return find("document", document).firstResultOptional();
     }
+
+
+    /*
+     * this method search a student by dorcument
+     */
+    public Optional<Student> findByEmail(String email) {
+        return find("email", email).firstResultOptional();
+    }
+
+
+
+
+
 }
