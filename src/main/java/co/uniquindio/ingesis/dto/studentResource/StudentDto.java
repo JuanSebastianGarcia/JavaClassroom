@@ -18,29 +18,25 @@ public record StudentDto(
         /*
          * student cedula
          */
-        @NotBlank
         String cedula,
 
 
         /*
          * student name
          */
-        @NotBlank
         String name,
 
 
         /*
          * student email
          */
-        @NotBlank
         String email,
 
 
         /*
          * student password
          */
-        @NotBlank
-        @Size(min = 12)
+        @Size()
         String password
 
         ) {

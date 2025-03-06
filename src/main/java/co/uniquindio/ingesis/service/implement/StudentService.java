@@ -2,7 +2,6 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
 
-import com.google.inject.Inject;
 
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.exception.StudentExistException;
@@ -11,6 +10,8 @@ import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.service.interf.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 /*
@@ -77,19 +78,35 @@ public class StudentService implements StudentServiceInterface{
     
     
     
+    /*
+     * this method remove a student 
+     */
     @Override
     public String deleteStuddent(StudentDto studentDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteStuddent'");
+
+        boolean response = studentRepository.removeByDocument(studentDto.cedula());
+
+
+        if(response == false){
+            throw new StudentNotExistException();
+        }
+
+        return "the student has been remove";
     }
 
 
 
-
+    /*
+     * this method update the student
+     */
     @Override
     public String updadateStudent(StudentDto studentDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updadateStudent'");
+        
+        Student studen_update = buildStudentFromDto(studentDto);
+    
+        studentRepository.persist(studen_update);
+
+        return "the student has been update";
     }
 
 
@@ -104,7 +121,7 @@ public class StudentService implements StudentServiceInterface{
         String password_hash = hashPassword(studentDto.password());
 
         //generate a student
-        return new Student(0,studentDto.cedula(),studentDto.name(),studentDto.email(),password_hash);
+        return new Student(studentDto.id(),studentDto.cedula(),studentDto.name(),studentDto.email(),password_hash);
     }
 
 
