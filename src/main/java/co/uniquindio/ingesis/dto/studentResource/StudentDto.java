@@ -2,6 +2,7 @@ package co.uniquindio.ingesis.dto.studentResource;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 /*
@@ -18,27 +19,35 @@ public record StudentDto(
         /*
          * student cedula
          */
+        @NotBlank
+        @Size(max = 10,message = "the max size is 10 numbers")
+        @Positive
         String cedula,
 
 
         /*
          * student name
          */
+        @NotBlank
         String name,
 
 
         /*
          * student email
          */
+        @NotBlank
         String email,
 
 
         /*
          * student password
          */
-        @Size()
+        @NotBlank
+        @Size(min = 12,message = "the password is very small")
         String password
 
+
+        
         ) {
 
 
