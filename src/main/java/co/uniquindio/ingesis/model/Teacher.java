@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
 @Table(name = "profesor")
-public class Profesor implements Serializable {
+public class Teacher implements Serializable {
 
     //_____________FIELDS__________________//
     @Id
@@ -19,7 +19,7 @@ public class Profesor implements Serializable {
     private Integer id;
 
     @Column(name = "documento_profesor", nullable = false, updatable = false, unique = true)
-    private String documento;
+    private String cedula;
 
     @Column(name = "nombre_profesor", nullable = false, updatable = false)
     private String nombre;

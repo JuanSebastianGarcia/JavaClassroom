@@ -1,13 +1,10 @@
 package co.uniquindio.ingesis.resource;
 
-import co.uniquindio.ingesis.dto.TeacherConsult;
-import co.uniquindio.ingesis.dto.ResponseDto;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
+import co.uniquindio.ingesis.service.interf.TeacherServiceInterface;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -16,30 +13,66 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class TeacherResource {
 
-    @GET
-    @Path("/{email}")
-    public Response getTeacher(@PathParam("email") String email) {
+    /*
+     * Service to access teacher
+     */
+    @Inject
+    private TeacherServiceInterface teacherService;
+
+    /*
+     * Controller to add a new teacher
+     */
+    @POST
+    public Response addTeacher(@Valid TeacherDto teacherDto) {
         try {
-            // Simulación de búsqueda del profesor
-            TeacherConsult teacher = new TeacherConsult(email);
-            var response = new ResponseDto<>(false, teacher);
-            return Response.ok(response).build();
+            String response = teacherService.addTeacher(teacherDto);
+            return Response.status(Response.Status.CREATED).entity(response).build();
         } catch (Exception e) {
-            var errorResponse = new ResponseDto<>(true, "Error al obtener el profesor: " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
-    @DELETE
-    @Path("/{email}")
-    public Response deleteTeacher(@PathParam("email") String email) {
+    /*
+     * Controller to get a teacher by document
+     */
+    @GET
+    @Path("/{cedula}")
+    public Response getTeacher(@PathParam("cedula") String cedula) {
         try {
-            // Simulación de eliminación del profesor
-            var response = new ResponseDto<>(false, "El profesor con email " + email + " ha sido eliminado.");
+            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "");
+            TeacherDto teacher = teacherService.getTeacher(teacherDto);
+            return Response.ok(teacher).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+
+    /*
+     * Controller to update a teacher's information
+     */
+    @PUT
+    public Response updateTeacher(@Valid TeacherDto teacherDto) {
+        try {
+            String response = teacherService.updateTeacher(teacherDto);
             return Response.ok(response).build();
         } catch (Exception e) {
-            var errorResponse = new ResponseDto<>(true, "Error al eliminar el profesor: " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /*
+     * Controller to delete a teacher
+     */
+    @DELETE
+    @Path("/{cedula}")
+    public Response deleteTeacher(@PathParam("cedula") String cedula) {
+        try {
+            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "");
+            String response = teacherService.deleteTeacher(teacherDto);
+            return Response.ok(response).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
