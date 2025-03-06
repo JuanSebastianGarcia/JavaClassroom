@@ -3,7 +3,7 @@ package co.uniquindio.ingesis.resource;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
+//import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;

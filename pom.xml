@@ -81,6 +81,12 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>5.1.0</version> <!-- Usa la última versión disponible -->
+        </dependency>
     
     </dependencies>
 
