@@ -2,7 +2,7 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
 
-import com.google.inject.Inject;
+import jakarta.inject.Inject; // Asegúrate de importar esta
 
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.exception.StudentExistException;

@@ -1,5 +1,4 @@
 networks:
-<<<<<<< HEAD
   classroom_red:
     ipam:
       config:
@@ -18,9 +17,10 @@ services:
       classroom_red:
         ipv4_address: 192.171.0.30
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - quarkus_pg_data:/var/lib/postgresql/data
+
   quarkus-app:
     build:
       context: ./../../../
@@ -43,31 +43,3 @@ services:
 
 volumes:
   quarkus_pg_data:
-=======
-  cacique_red:
-    ipam:
-      config:
-        - subnet: 192.180.0.0/24
-
-services:
-  postgres:
-    image: postgres
-    container_name: javaclassroom
-    restart: always
-    environment:
-      POSTGRES_USER: java_classroom
-      POSTGRES_PASSWORD: java_classroom
-      POSTGRES_DB: java_classroom
-    networks:
-      cacique_red:
-        ipv4_address: 192.180.0.30
-    ports:
-      - "5000:5000"
-    volumes:
-      - java_class_data:/var/lib/postgresql/data
-
-
-
-volumes:
-  java_class_data:
->>>>>>> c1224fb8ca88030a9a17b4b093152fd5ab529b28
