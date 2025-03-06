@@ -14,7 +14,6 @@ import co.uniquindio.ingesis.service.interf.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import net.bytebuddy.implementation.bytecode.Throw;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -68,7 +67,7 @@ public class StudentService implements StudentServiceInterface{
 
         
         //search student
-        Optional<Student> student = studentRepository.findByEmail(studentDto.emailgit ());
+        Optional<Student> student = studentRepository.findByEmail(studentDto.email());
 
         //validate if student dont exist
         if (student.isEmpty()){

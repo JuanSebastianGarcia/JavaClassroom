@@ -2,8 +2,6 @@ package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.service.interf.TeacherServiceInterface;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,21 +15,27 @@ public class TeacherResource {
     /*
      * Service to access teacher
      */
-    @Inject
-    private TeacherServiceInterface teacherService;
+    private final TeacherServiceInterface teacherService;
+
+    /*
+     * Constructor with dependency injection
+     */
+    public TeacherResource(TeacherServiceInterface teacherService) {
+        this.teacherService = teacherService;
+    }
+
 
     /*
      * Controller to add a new teacher
      */
     @POST
-    @Transactional
     public Response addTeacher(@Valid TeacherDto teacherDto) {
         try {
             String response = teacherService.addTeacher(teacherDto);
             return Response.status(Response.Status.CREATED).entity(response).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
+        }                       
     }
 
     /*

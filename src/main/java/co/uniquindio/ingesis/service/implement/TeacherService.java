@@ -2,7 +2,6 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
 
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.exception.TeacherExistException;
@@ -19,10 +18,20 @@ import org.mindrot.jbcrypt.BCrypt;
 @ApplicationScoped
 public class TeacherService implements TeacherServiceInterface {
 
+
+    
+    /*
+     * Constructor with dependency injection
+     */
+    public TeacherService(TeacherRepository teacherRepository) {
+
+        this.teacherRepository = teacherRepository;
+    }
+
+
     /*
      * Teacher's repository
      */
-    @Inject
     private TeacherRepository teacherRepository;
 
     /*
@@ -52,6 +61,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method searches a teacher by document
      */
     @Override
+    @Transactional
     public TeacherDto getTeacher(TeacherDto teacherDto) {
 
         // Search teacher
@@ -70,6 +80,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method deletes a teacher
      */
     @Override
+    @Transactional
     public String deleteTeacher(TeacherDto teacherDto) {
 
         // Search teacher
@@ -89,6 +100,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method updates a teacher's information
      */
     @Override
+    @Transactional
     public String updateTeacher(TeacherDto teacherDto) {
 
         // Search teacher
@@ -115,7 +127,7 @@ public class TeacherService implements TeacherServiceInterface {
         String password_hash = hashPassword(teacherDto.password());
 
         // Generate a teacher
-        return new Teacher(0, teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash);
+        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash);
     }
 
     /*
