@@ -5,26 +5,29 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Optional;
 
+/**
+ * Repository for managing student data using Panache.
+ */
 @ApplicationScoped
 public class StudentRepository implements PanacheRepository<Student> {
 
-    /*
-     * this method search a student by dorcument
+    /**
+     * Searches for a student by their document number.
+     *
+     * @param document The document number of the student.
+     * @return An Optional containing the student if found, otherwise empty.
      */
     public Optional<Student> findByCedula(String document) {
         return find("document", document).firstResultOptional();
     }
 
-
-    /*
-     * this method search a student by dorcument
+    /**
+     * Searches for a student by their email address.
+     *
+     * @param email The email of the student.
+     * @return An Optional containing the student if found, otherwise empty.
      */
     public Optional<Student> findByEmail(String email) {
         return find("email", email).firstResultOptional();
     }
-
-
-
-
-
 }

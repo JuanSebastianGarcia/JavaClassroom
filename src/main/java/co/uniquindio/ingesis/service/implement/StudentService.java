@@ -1,8 +1,6 @@
 package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
-
-
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrextException;
@@ -14,195 +12,148 @@ import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 import org.mindrot.jbcrypt.BCrypt;
 
-/*
- * this service is responsible for the process to manage students
+/**
+ * Service responsible for handling student management operations.
  */
 @ApplicationScoped 
-public class StudentService implements StudentServiceInterface{
+public class StudentService implements StudentServiceInterface {
     
-
-    /*
-     * student's repository
+    /**
+     * Repository for accessing student data.
      */
     @Inject
     private StudentRepository studentRepository;
 
-
-    
-
-
-    /*
-     * this method add a new student and validate
+    /**
+     * Adds a new student to the system, ensuring no duplicates exist.
+     *
+     * @param studentDto DTO containing student information.
+     * @return Confirmation message upon successful creation.
+     * @throws StudentExistException If a student with the same document already exists.
      */
     @Override
     @Transactional
-    public String addStudent(StudentDto studentDto)throws StudentExistException {
-        
-        Student new_student = buildStudentFromDto(studentDto);
+    public String addStudent(StudentDto studentDto) throws StudentExistException {
+        Student newStudent = buildStudentFromDto(studentDto);
 
-        //search student
-        Optional<Student> student_exist = studentRepository.findByCedula(new_student.getDocument());
-
-        // validate if the student already exist
-        if(student_exist.isPresent()){
+        // Check if the student already exists
+        Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
+        if (existingStudent.isPresent()) {
             throw new StudentExistException();
         }
 
-        //add student
-        studentRepository.persist(new_student);
-
-
-        return "the student has been created";
+        // Persist new student
+        studentRepository.persist(newStudent);
+        return "The student has been created";
     }
 
-    
-    
-    /*
-     * this method search a student by document
+    /**
+     * Retrieves a student's information by email.
+     *
+     * @param email The email of the student to retrieve.
+     * @return DTO containing student details.
+     * @throws StudentNotExistException If the student does not exist.
      */
     @Override   
     @Transactional
     public StudentDto getStudent(String email) {
-
-        
-        //search student
         Optional<Student> student = studentRepository.findByEmail(email);
-
-        //validate if student dont exist
-        if (student.isEmpty()){
-            throw new StudentNotExistException();
-        }
-
-        //build student dto
-        StudentDto studentDto = buildDtoFromStudent(student.get());
-
-        return studentDto;
-    }
-
-    
-    
-    
-    /*
-     * this method remove a student 
-     */
-    @Transactional
-    @Override
-    public String deleteStuddent(String email,StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException {
-
-        //search student
-        Optional<Student> student = studentRepository.findByEmail(email);
-
-        //validate if the student existe
         if (student.isEmpty()) {
-            
             throw new StudentNotExistException();
         }
-
-
-        //validate student
-        if (!BCrypt.checkpw(studentDto.password(), student.get().getPassword())) {
-
-            throw new PasswordIncorrextException();
-        }
-
-
-        //update student
-        studentRepository.delete(student.get());
-
-        return "the student has been deleteadd ";
+        return buildDtoFromStudent(student.get());
     }
 
+    /**
+     * Deletes a student from the system after verifying credentials.
+     *
+     * @param email The email of the student to delete.
+     * @param studentDto DTO containing authentication details.
+     * @return Confirmation message upon successful deletion.
+     * @throws PasswordIncorrextException If the provided password is incorrect.
+     * @throws StudentNotExistException If the student does not exist.
+     */
+    @Transactional
+    @Override
+    public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException {
+        Optional<Student> student = studentRepository.findByEmail(email);
+        if (student.isEmpty()) {
+            throw new StudentNotExistException();
+        }
+        if (!BCrypt.checkpw(studentDto.password(), student.get().getPassword())) {
+            throw new PasswordIncorrextException();
+        }
+        studentRepository.delete(student.get());
+        return "The student has been deleted";
+    }
 
-
-    
-
-
-    /*
-     * this method update the student
+    /**
+     * Updates an existing student's details.
+     *
+     * @param id The ID of the student to update.
+     * @param studentUpdateDto DTO containing updated student information.
+     * @return Confirmation message upon successful update.
+     * @throws PasswordIncorrextException If the provided password is incorrect.
      */
     @Override
     @Transactional
-    public String updadateStudent(int id,StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException {
-        
-        //search student
-        Student student = studentRepository.findById((long)id);
-
-        //validate if the student existe
+    public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException {
+        Student student = studentRepository.findById((long) id);
         if (student == null) {
-            
             throw new StudentNotExistException();
         }
-
-
-        //validate studentp
         if (!BCrypt.checkpw(studentUpdateDto.password(), student.getPassword())) {
-        
             throw new PasswordIncorrextException();
         }
 
-        //update password
-        if (!(studentUpdateDto.new_password().equals("") || studentUpdateDto.new_password() == null)) {
-            
-            String new_password = hashPassword(studentUpdateDto.new_password());
-
-            student.setPassword(new_password);
+        // Update password if provided
+        if (studentUpdateDto.new_password() != null && !studentUpdateDto.new_password().isEmpty()) {
+            student.setPassword(hashPassword(studentUpdateDto.new_password()));
         }
 
-       
-        //update email
-        if (!(studentUpdateDto.email().equals("") || studentUpdateDto.email() == null)) {
-            
+        // Update email if provided
+        if (studentUpdateDto.email() != null && !studentUpdateDto.email().isEmpty()) {
             student.setEmail(studentUpdateDto.email());
         }
 
-        //update name
-        if (!(studentUpdateDto.nombre().equals("") || studentUpdateDto.nombre() == null)) {
-            
+        // Update name if provided
+        if (studentUpdateDto.nombre() != null && !studentUpdateDto.nombre().isEmpty()) {
             student.setName(studentUpdateDto.nombre());
         }
 
-    
-        //update student
         studentRepository.persist(student);
-
-        return "the student has been update";
+        return "The student has been updated";
     }
 
-
-
-
-
-    /*
-     * this method build a student from student dto
+    /**
+     * Converts a StudentDto into a Student entity.
+     *
+     * @param studentDto The DTO containing student information.
+     * @return A Student entity.
      */
-    private Student buildStudentFromDto(StudentDto studentDto){
-
-        String password_hash = hashPassword(studentDto.password());
-
-        //generate a student
-        return new Student(studentDto.id(),studentDto.cedula(),studentDto.name(),studentDto.email(),password_hash);
+    private Student buildStudentFromDto(StudentDto studentDto) {
+        return new Student(studentDto.id(), studentDto.cedula(), studentDto.name(), studentDto.email(), hashPassword(studentDto.password()));
     }
 
-
-
-    
-    /*
-     * this method apply a hash to the password
+    /**
+     * Hashes a password using BCrypt.
+     *
+     * @param password The plaintext password.
+     * @return The hashed password.
      */
-    private String hashPassword(String password){
+    private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
 
-
-    /*
-     * this method build a studentDto from student
+    /**
+     * Converts a Student entity into a StudentDto.
+     *
+     * @param student The Student entity.
+     * @return A DTO representation of the student.
      */
-    private StudentDto buildDtoFromStudent(Student student){
+    private StudentDto buildDtoFromStudent(Student student) {
         return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "");
-    } 
-
-
+    }
 }
