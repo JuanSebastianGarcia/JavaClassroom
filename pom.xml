@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Root element of the POM file -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Model version -->
     <modelVersion>4.0.0</modelVersion>
+    <!-- Group ID -->
     <groupId>co.uniquindio.ingesis</groupId>
+    <!-- Artifact ID -->
     <artifactId>final_project</artifactId>
+    <!-- Version -->
     <version>1.0.0-SNAPSHOT</version>
 
+    <!-- Properties -->
     <properties>
+        <!-- Compiler plugin version -->
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <!-- Maven compiler release version -->
         <maven.compiler.release>17</maven.compiler.release>
+        <!-- Maven compiler source version -->
         <maven.compiler.source>17</maven.compiler.source>
+        <!-- Maven compiler target version -->
         <maven.compiler.target>17</maven.compiler.target>
+        <!-- Project build source encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Project reporting output encoding -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Quarkus platform artifact ID -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+        <!-- Quarkus platform group ID -->
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <!-- Quarkus platform version -->
         <quarkus.platform.version>3.19.1</quarkus.platform.version>
+        <!-- Skip integration tests -->
         <skipITs>true</skipITs>
+        <!-- Surefire plugin version -->
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
     </properties>
 
+    <!-- Dependency management -->
     <dependencyManagement>
         <dependencies>
+            <!-- Quarkus BOM dependency -->
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
@@ -31,68 +50,80 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- Dependencies -->
     <dependencies>
+        <!-- Quarkus Hibernate Validator dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
+        <!-- Quarkus SmallRye OpenAPI dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
+        <!-- Quarkus REST Jackson dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
+        <!-- Quarkus ARC dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
+        <!-- Quarkus REST dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
         </dependency>
+        <!-- Quarkus JUnit 5 dependency for testing -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Rest Assured dependency for testing -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Quarkus Hibernate ORM Panache dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
+        <!-- Quarkus JDBC PostgreSQL dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-postgresql</artifactId> 
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
         </dependency>
+        <!-- Lombok dependency -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version> 
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
-
+        <!-- JBCrypt dependency -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
-
+        <!-- Google Guice dependency -->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>5.1.0</version> <!-- Usa la última versión disponible -->
+            <version>5.1.0</version>
         </dependency>
-    
     </dependencies>
 
+    <!-- Build configuration -->
     <build>
         <plugins>
+            <!-- Quarkus Maven plugin -->
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
@@ -109,6 +140,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Maven Compiler plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
@@ -118,7 +150,7 @@
                     <release>17</release>
                 </configuration>
             </plugin>
-
+            <!-- Maven Surefire plugin -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
@@ -129,6 +161,7 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <!-- Maven Failsafe plugin -->
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
@@ -151,7 +184,9 @@
         </plugins>
     </build>
 
+    <!-- Profiles -->
     <profiles>
+        <!-- Native profile -->
         <profile>
             <id>native</id>
             <activation>
