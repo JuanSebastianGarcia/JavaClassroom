@@ -7,7 +7,7 @@ public record TeacherDto (
 /*
  * student id
  */
-int id,
+Integer id,
 
 /*
  * student cedula

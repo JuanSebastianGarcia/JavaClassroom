@@ -14,7 +14,6 @@ import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.QueryParam;
 
 import org.mindrot.jbcrypt.BCrypt;
 
