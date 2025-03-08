@@ -6,7 +6,7 @@ import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrextException;
 import co.uniquindio.ingesis.exception.StudentExistException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
-import co.uniquindio.ingesis.service.interf.StudentServiceInterface;
+import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -15,6 +15,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -72,14 +73,14 @@ public class StudentResource {
      * this method search a student
      */
     @GET
-    public Response getStudent(StudentDto studentDto){
+    public Response getStudent(@QueryParam("email") String email){
 
         try{
-            StudentDto student = studentService.getStudent(studentDto);
+            StudentDto student = studentService.getStudent(email);
 
             return Response.status(Response.Status.OK).entity(student).build();
         }
-        catch(StudentExistException e){
+        catch(StudentNotExistException e){
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
         catch(Exception e){
@@ -91,12 +92,13 @@ public class StudentResource {
 
     /*
      * this method update a student
+     * 
      */
     @PUT
-    public Response updateStudent(StudentUpdateDto studentUpdateDto){
+    public Response updateStudent(@QueryParam("id")int id,StudentUpdateDto studentUpdateDto){
 
         try{
-            String student = studentService.updadateStudent(studentUpdateDto);
+            String student = studentService.updadateStudent(id,studentUpdateDto);
 
             return Response.status(Response.Status.CREATED).entity(student).build();
         }
@@ -118,11 +120,11 @@ public class StudentResource {
      * this method delete a student
      */
     @DELETE
-    public Response deleteStudent(StudentDto studentDto){
+    public Response deleteStudent(@QueryParam("email")String email,StudentDto studentDto){
 
         try{
 
-            String respuesta = studentService.deleteStuddent(studentDto);
+            String respuesta = studentService.deleteStuddent(email, studentDto);
 
             return Response.status(Response.Status.OK).entity(respuesta).build();
 

@@ -1,4 +1,4 @@
-package co.uniquindio.ingesis.service.interf;
+package co.uniquindio.ingesis.service.interfaces;
 
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.exception.TeacherExistException;

@@ -4,17 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record StudentUpdateDto(
 
-    /*
-     * student's id
-     */
-    @NotBlank
-    int id,
-
-    /*
-     * student's cedula
-     */
-    @NotBlank
-    int cedula,
 
     /*
      * student's name

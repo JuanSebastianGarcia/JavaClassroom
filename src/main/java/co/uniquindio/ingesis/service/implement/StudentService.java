@@ -10,11 +10,11 @@ import co.uniquindio.ingesis.exception.StudentExistException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.repository.StudentRepository;
-import co.uniquindio.ingesis.service.interf.StudentServiceInterface;
+import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import net.bytebuddy.implementation.bytecode.Throw;
+import jakarta.ws.rs.QueryParam;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -31,6 +31,8 @@ public class StudentService implements StudentServiceInterface{
     @Inject
     private StudentRepository studentRepository;
 
+
+    
 
 
     /*
@@ -64,11 +66,11 @@ public class StudentService implements StudentServiceInterface{
      */
     @Override   
     @Transactional
-    public StudentDto getStudent(StudentDto studentDto) {
+    public StudentDto getStudent(String email) {
 
         
         //search student
-        Optional<Student> student = studentRepository.findByEmail(studentDto.emailgit ());
+        Optional<Student> student = studentRepository.findByEmail(email);
 
         //validate if student dont exist
         if (student.isEmpty()){
@@ -76,7 +78,7 @@ public class StudentService implements StudentServiceInterface{
         }
 
         //build student dto
-        studentDto = buildDtoFromStudent(student.get());
+        StudentDto studentDto = buildDtoFromStudent(student.get());
 
         return studentDto;
     }
@@ -89,10 +91,10 @@ public class StudentService implements StudentServiceInterface{
      */
     @Transactional
     @Override
-    public String deleteStuddent(StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException {
+    public String deleteStuddent(String email,StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException {
 
         //search student
-        Optional<Student> student = studentRepository.findByEmail(studentDto.email());
+        Optional<Student> student = studentRepository.findByEmail(email);
 
         //validate if the student existe
         if (student.isEmpty()) {
@@ -102,7 +104,7 @@ public class StudentService implements StudentServiceInterface{
 
 
         //validate student
-        if (!(hashPassword(studentDto.password()) == student.get().getPassword())) {
+        if (!BCrypt.checkpw(studentDto.password(), student.get().getPassword())) {
 
             throw new PasswordIncorrextException();
         }
@@ -111,7 +113,7 @@ public class StudentService implements StudentServiceInterface{
         //update student
         studentRepository.delete(student.get());
 
-        return "the student has been update";
+        return "the student has been deleteadd ";
     }
 
 
@@ -124,10 +126,10 @@ public class StudentService implements StudentServiceInterface{
      */
     @Override
     @Transactional
-    public String updadateStudent(StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException {
+    public String updadateStudent(int id,StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException {
         
         //search student
-        Student student = studentRepository.findById((long) studentUpdateDto.id());
+        Student student = studentRepository.findById((long)id);
 
         //validate if the student existe
         if (student == null) {
@@ -135,8 +137,9 @@ public class StudentService implements StudentServiceInterface{
             throw new StudentNotExistException();
         }
 
-        //validate student
-        if (!(hashPassword(studentUpdateDto.password()) == student.getPassword())) {
+
+        //validate studentp
+        if (!BCrypt.checkpw(studentUpdateDto.password(), student.getPassword())) {
         
             throw new PasswordIncorrextException();
         }
@@ -144,8 +147,24 @@ public class StudentService implements StudentServiceInterface{
         //update password
         if (!(studentUpdateDto.new_password().equals("") || studentUpdateDto.new_password() == null)) {
             
-            student.setPassword(studentUpdateDto.new_password());
+            String new_password = hashPassword(studentUpdateDto.new_password());
+
+            student.setPassword(new_password);
         }
+
+       
+        //update email
+        if (!(studentUpdateDto.email().equals("") || studentUpdateDto.email() == null)) {
+            
+            student.setEmail(studentUpdateDto.email());
+        }
+
+        //update name
+        if (!(studentUpdateDto.nombre().equals("") || studentUpdateDto.nombre() == null)) {
+            
+            student.setName(studentUpdateDto.nombre());
+        }
+
     
         //update student
         studentRepository.persist(student);

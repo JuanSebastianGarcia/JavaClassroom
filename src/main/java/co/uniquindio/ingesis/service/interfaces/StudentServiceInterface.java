@@ -1,4 +1,4 @@
-package co.uniquindio.ingesis.service.interf;
+package co.uniquindio.ingesis.service.interfaces;
 
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
@@ -22,21 +22,21 @@ public interface StudentServiceInterface {
     /*
      * Method to searh a student by email
      */
-    StudentDto getStudent(StudentDto studentDto);
+    StudentDto getStudent(String email);
 
 
 
     /*
      * Method to delete a student by email
      */
-    String deleteStuddent(StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException;
+    String deleteStuddent(String email,StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException;
 
 
 
     /*
      * Method to update a studet
      */
-    String updadateStudent(StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException;
+    String updadateStudent(int id,StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException;
 
 
 }

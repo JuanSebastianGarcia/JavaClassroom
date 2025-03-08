@@ -9,7 +9,7 @@ import co.uniquindio.ingesis.exception.TeacherExistException;
 import co.uniquindio.ingesis.exception.TeacherNotExistException;
 import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.repository.TeacherRepository;
-import co.uniquindio.ingesis.service.interf.TeacherServiceInterface;
+import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.mindrot.jbcrypt.BCrypt;
 

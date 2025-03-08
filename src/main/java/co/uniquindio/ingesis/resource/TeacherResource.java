@@ -1,7 +1,7 @@
 package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
-import co.uniquindio.ingesis.service.interf.TeacherServiceInterface;
+import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
