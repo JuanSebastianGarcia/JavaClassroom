@@ -133,7 +133,7 @@ public class TeacherService implements TeacherServiceInterface {
         String password_hash = hashPassword(teacherDto.password());
 
         // Generate a teacher
-        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash,StatusAcountEnum.PENDING,"");
+        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash,StatusAcountEnum.PENDING, "");    
     }
 
     /*

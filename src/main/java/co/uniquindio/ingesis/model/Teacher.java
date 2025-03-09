@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "profesor")
 public class Teacher {
 
-    //_____________FIELDS__________________//
+    //____FIELDS_______//
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_profesor")
@@ -37,4 +37,3 @@ public class Teacher {
 
 
 }
-
