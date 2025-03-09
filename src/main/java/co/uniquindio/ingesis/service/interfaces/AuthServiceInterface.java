@@ -2,6 +2,7 @@ package co.uniquindio.ingesis.service.interfaces;
 
 import co.uniquindio.ingesis.dto.login.LoginDto;
 import co.uniquindio.ingesis.dto.login.TokenResponseDto;
+import co.uniquindio.ingesis.exception.AccountNotVerifiedException;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 
@@ -19,6 +20,7 @@ public interface AuthServiceInterface {
      * @return A string containing a token or authentication message.
      * @throws RoleUnknownException 
      * @throws PasswordIncorrectException 
+     * @throws AccountNotVerifiedException 
      */
-    TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException;
+    TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException;
 }

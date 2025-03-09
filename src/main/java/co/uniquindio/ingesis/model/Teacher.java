@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.model;
 
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "profesor")
 public class Teacher {
 
-    //_____________FIELDS__________________//
+    //____FIELDS_______//
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_profesor")
@@ -28,5 +29,11 @@ public class Teacher {
     @Column(name = "password_profesor", nullable = false)
     private String password;
 
-}
+    @Column(name="status")
+    private StatusAcountEnum status;
 
+    @Column(name="token_verification")
+    private String token;
+
+
+}

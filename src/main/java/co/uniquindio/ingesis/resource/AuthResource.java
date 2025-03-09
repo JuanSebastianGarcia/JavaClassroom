@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import co.uniquindio.ingesis.dto.login.LoginDto;
 import co.uniquindio.ingesis.dto.login.TokenResponseDto;
 import co.uniquindio.ingesis.dto.responses.ErrorResponse;
+import co.uniquindio.ingesis.exception.AccountNotVerifiedException;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
@@ -46,7 +47,10 @@ public class AuthResource {
             return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
         } catch (RoleUnknownException e) {
             return buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
-        } catch (Exception e) { // Catch-all for unexpected errors
+        }catch (AccountNotVerifiedException e) {
+            return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
+        } 
+        catch (Exception e) { // Catch-all for unexpected errors
             return buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         }
     }

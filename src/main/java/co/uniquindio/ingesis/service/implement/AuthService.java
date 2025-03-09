@@ -10,11 +10,13 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import co.uniquindio.ingesis.dto.login.LoginDto;
 import co.uniquindio.ingesis.dto.login.TokenResponseDto;
+import co.uniquindio.ingesis.exception.AccountNotVerifiedException;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.Teacher;
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.AuthServiceInterface;
@@ -56,9 +58,10 @@ public class AuthService implements AuthServiceInterface {
      * @return TokenResponseDto containing the JWT token.
      * @throws RoleUnknownException       If the role provided is unknown.
      * @throws PasswordIncorrectException If the password is incorrect.
-     */
-    @Override
-    public TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException {
+          * @throws AccountNotVerifiedException 
+          */
+         @Override
+         public TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException {
         String role = loginDto.role();
         String token;
 
@@ -82,12 +85,17 @@ public class AuthService implements AuthServiceInterface {
      * @param loginDto The login credentials.
      * @return A JWT token for the student.
      * @throws PasswordIncorrectException If the password is incorrect.
-     */
-    private String generateTokenForStudent(LoginDto loginDto) throws PasswordIncorrectException {
+          * @throws AccountNotVerifiedException 
+          */
+         private String generateTokenForStudent(LoginDto loginDto) throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Student> student = studentRepository.findByEmail(loginDto.email());
 
         // Use orElseThrow to simplify optional handling
         Student foundStudent = student.orElseThrow(StudentNotExistException::new);
+
+        if(student.get().getStatus().equals(StatusAcountEnum.PENDING)){
+            throw new AccountNotVerifiedException();
+        }
 
         validatePassword(loginDto.password(), foundStudent.getPassword());
 
@@ -100,12 +108,17 @@ public class AuthService implements AuthServiceInterface {
      * @param loginDto The login credentials.
      * @return A JWT token for the teacher.
      * @throws PasswordIncorrectException If the password is incorrect.
-     */
-    private String generateTokenForTeacher(LoginDto loginDto) throws PasswordIncorrectException {
+          * @throws AccountNotVerifiedException 
+          */
+         private String generateTokenForTeacher(LoginDto loginDto) throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Teacher> teacher = teacherRepository.findByEmail(loginDto.email());
 
         // Use orElseThrow to simplify optional handling
         Teacher foundTeacher = teacher.orElseThrow(StudentNotExistException::new);
+
+        if(teacher.get().getStatus().equals(StatusAcountEnum.PENDING)){
+            throw new AccountNotVerifiedException();
+        }
 
         validatePassword(loginDto.password(), foundTeacher.getPassword());
 

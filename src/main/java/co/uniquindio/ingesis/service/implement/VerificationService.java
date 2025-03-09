@@ -38,10 +38,10 @@ public class VerificationService implements VerificationServiceInterface {
     @Override
     public String sendVerificationEmail(String email) {
         String verificationCode = UUID.randomUUID().toString();
-        String verificationLink = "http://localhost:8080/verify?token=" + verificationCode + "&email=" + email;
+        String verificationLink = verificationCode;
 
         mailer.send(
-            Mail.withText(email, "Verifica tu cuenta", "Haz clic en el siguiente enlace para verificar tu cuenta: " + verificationLink)
+            Mail.withText(email, "Verifica tu cuenta", "Tu codigo de verificacion es: " + verificationLink)
         );
 
         return verificationCode;
