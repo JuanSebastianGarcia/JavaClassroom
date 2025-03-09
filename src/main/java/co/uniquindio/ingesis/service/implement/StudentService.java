@@ -7,6 +7,7 @@ import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.StudentExistException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.model.Student;
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,6 +27,22 @@ public class StudentService implements StudentServiceInterface {
     @Inject
     private StudentRepository studentRepository;
 
+    @Inject
+    private final VerificationService verificationService;
+
+    /**
+     * Constructor for dependency injection.
+     *
+     * @param studentRepository Repository for accessing student data.
+     */
+    public StudentService(StudentRepository studentRepository, VerificationService verificationService) {
+        this.studentRepository = studentRepository;
+        this.verificationService = verificationService;
+    
+    }
+
+
+
     /**
      * Adds a new student to the system, ensuring no duplicates exist.
      *
@@ -44,11 +61,17 @@ public class StudentService implements StudentServiceInterface {
             throw new StudentExistException();
         }
 
+        // Send verification email
+        newStudent.setToken(verificationService.sendVerificationEmail(newStudent.getEmail()));
+
         // Persist new student
         studentRepository.persist(newStudent);
+
         return "The student has been created";
     }
 
+
+    
     /**
      * Retrieves a student's information by email.
      *
@@ -134,7 +157,7 @@ public class StudentService implements StudentServiceInterface {
      * @return A Student entity.
      */
     private Student buildStudentFromDto(StudentDto studentDto) {
-        return new Student(studentDto.id(), studentDto.cedula(), studentDto.name(), studentDto.email(), hashPassword(studentDto.password()));
+        return new Student(studentDto.id(), studentDto.cedula(), studentDto.name(), studentDto.email(), hashPassword(studentDto.password()),StatusAcountEnum.PENDING,"");
     }
 
     /**
@@ -154,6 +177,6 @@ public class StudentService implements StudentServiceInterface {
      * @return A DTO representation of the student.
      */
     private StudentDto buildDtoFromStudent(Student student) {
-        return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "");
+        return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "",student.getStatus());
     }
 }

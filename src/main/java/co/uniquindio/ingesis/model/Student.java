@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.model;
 
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,5 +49,17 @@ public class Student {
      */
     @Column(name = "password", nullable = false)
     private String password;
+    
+    /*
+     * 
+     */
+    @Column(name="status")
+    private StatusAcountEnum status;
 
+
+    /*
+     * 
+     */
+    @Column(name="token_verification")
+    private String token;
 }

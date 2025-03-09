@@ -59,6 +59,7 @@ public class StudentResource {
         }
     }
 
+    
     /**
      * Endpoint to retrieve a student's details by email.
      *
