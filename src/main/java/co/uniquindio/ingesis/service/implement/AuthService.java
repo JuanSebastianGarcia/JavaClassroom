@@ -1,8 +1,10 @@
 package co.uniquindio.ingesis.service.implement;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -16,14 +18,23 @@ import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.AuthServiceInterface;
-import io.smallrye.jwt.build.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.Base64;
 
 /**
  * AuthService is responsible for handling authentication logic, including login validation
  * and JWT token generation for students and teachers.
  */
+@ApplicationScoped
 public class AuthService implements AuthServiceInterface {
 
+
+    @ConfigProperty(name = "jwt.secret.key")
+    private String SECRET_KEY;
+    
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
 
@@ -108,16 +119,16 @@ public class AuthService implements AuthServiceInterface {
      * @param role  The user's role.
      * @return A signed JWT token.
      */
-    public static String generateToken(String email, String role) {
-        Instant now = Instant.now();
+    public String generateToken(String email, String role) {
 
-        return Jwt.issuer("javaclassroom")
-                .subject(email)
-                .upn(email)
-                .groups(role)
-                .expiresAt(now.plus(Duration.ofDays(30)))
-                .issuedAt(now)
-                .sign();
+        return Jwts.builder()   
+                .setSubject("user123")
+                .setIssuer("javclassroom")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000))) 
+                .signWith(getSigningKey()) 
+                .compact();
+
     }
 
     /**
@@ -132,4 +143,19 @@ public class AuthService implements AuthServiceInterface {
             throw new PasswordIncorrectException();
         }
     }
+
+
+    /**
+     * Converts the Base64-encoded string key into a SecretKey for JWT signing.
+     *
+     * @return A SecretKey object used for signing JWT tokens.
+     */
+    private SecretKey getSigningKey() {
+        // Decode the Base64-encoded secret key
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+
+        // Generate a SecretKey using HMAC SHA-256 algorithm
+        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+    }
+
 }
