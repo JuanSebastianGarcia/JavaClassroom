@@ -1,6 +1,7 @@
 package co.uniquindio.ingesis.dto.studentResource;
 
 
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -44,10 +45,13 @@ public record StudentDto(
          */
         @NotBlank
         @Size(min = 12,message = "the password is very small")
-        String password
-
+        String password,
 
         
+        /*
+         * student status
+         */
+        StatusAcountEnum status
         ) {
 
 
