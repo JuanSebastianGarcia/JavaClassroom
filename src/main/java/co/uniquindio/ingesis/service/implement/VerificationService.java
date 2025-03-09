@@ -1,10 +1,13 @@
 package co.uniquindio.ingesis.service.implement;
 
+import java.util.Optional;
 import java.util.UUID;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.service.interfaces.VerificationServiceInterface;
@@ -21,8 +24,9 @@ public class VerificationService implements VerificationServiceInterface {
     private final StudentRepository studentRepository;
 
     @Inject
-    public VerificationService(StudentRepository studentRepository) {
+    public VerificationService(StudentRepository studentRepository, Mailer mailer) {
         this.studentRepository = studentRepository;
+        this.mailer = mailer;
     }
 
     /**
@@ -50,12 +54,17 @@ public class VerificationService implements VerificationServiceInterface {
      * @param verificationCode The code that was sent to the user.
      */
     @Override
+    @Transactional
     public void verifyAccount(String email, String verificationCode) {
-        studentRepository.findByEmail(email).ifPresent(student -> {
-            if (verificationCode.equals(student.getToken())) {
-                student.setStatus(StatusAcountEnum.ACTIVE);
-                studentRepository.persist(student);
-            }
-        });
+
+        Optional<Student>student = studentRepository.findByEmail(email);
+
+        if(student.isPresent() && student.get().getToken().equals(verificationCode)) {
+            student.get().setStatus(StatusAcountEnum.ACTIVE);
+            studentRepository.persist(student.get());
+        } else {
+            throw new IllegalArgumentException("Invalid verification code");
+        }
+        
     }
 }
