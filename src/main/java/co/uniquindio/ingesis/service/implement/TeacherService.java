@@ -7,6 +7,7 @@ import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.exception.TeacherExistException;
 import co.uniquindio.ingesis.exception.TeacherNotExistException;
 import co.uniquindio.ingesis.model.Teacher;
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
 import jakarta.annotation.security.RolesAllowed;
@@ -132,7 +133,7 @@ public class TeacherService implements TeacherServiceInterface {
         String password_hash = hashPassword(teacherDto.password());
 
         // Generate a teacher
-        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash);
+        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash,StatusAcountEnum.PENDING,"");
     }
 
     /*
@@ -146,6 +147,6 @@ public class TeacherService implements TeacherServiceInterface {
      * This method builds a TeacherDto from a Teacher
      */
     private TeacherDto buildDtoFromTeacher(Teacher teacher) {
-        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "");
+        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "", teacher.getStatus());
     }
 }

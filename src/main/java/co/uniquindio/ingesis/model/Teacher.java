@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.model;
 
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,13 @@ public class Teacher {
 
     @Column(name = "password_profesor", nullable = false)
     private String password;
+
+    @Column(name="status")
+    private StatusAcountEnum status;
+
+    @Column(name="token_verification")
+    private String token;
+
 
 }
 

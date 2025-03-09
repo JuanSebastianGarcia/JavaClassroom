@@ -1,6 +1,7 @@
 package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -45,7 +46,7 @@ public class TeacherResource {
     @Path("/{cedula}")
     public Response getTeacher(@PathParam("cedula") String cedula) {
         try {
-            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "");
+            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "",StatusAcountEnum.PENDING);
             TeacherDto teacher = teacherService.getTeacher(teacherDto);
             return Response.ok(teacher).build();
         } catch (Exception e) {
@@ -74,7 +75,7 @@ public class TeacherResource {
     @Path("/{cedula}")
     public Response deleteTeacher(@PathParam("cedula") String cedula) {
         try {
-            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "");
+            TeacherDto teacherDto = new TeacherDto(0, cedula, "", "", "",StatusAcountEnum.PENDING);
             String response = teacherService.deleteTeacher(teacherDto);
             return Response.ok(response).build();
         } catch (Exception e) {

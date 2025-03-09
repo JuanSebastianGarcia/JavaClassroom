@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.dto.teacherResource;
 
+import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -35,7 +36,13 @@ String email,
  */
 @NotBlank
 @Size(min = 12)
-String password
+String password,
+
+        
+/*
+* student status
+*/
+StatusAcountEnum status
 
 )  {
 
