@@ -118,6 +118,12 @@
             <artifactId>guice</artifactId>
             <version>5.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-jwt</artifactId>
+            <version>${quarkus.platform.version}</version> 
+        </dependency>
+
     </dependencies>
 
     <!-- Build configuration -->

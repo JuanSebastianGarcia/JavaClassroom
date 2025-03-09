@@ -3,7 +3,7 @@ package co.uniquindio.ingesis.service.implement;
 import java.util.Optional;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
-import co.uniquindio.ingesis.exception.PasswordIncorrextException;
+import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.StudentExistException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.model.Student;
@@ -72,18 +72,18 @@ public class StudentService implements StudentServiceInterface {
      * @param email The email of the student to delete.
      * @param studentDto DTO containing authentication details.
      * @return Confirmation message upon successful deletion.
-     * @throws PasswordIncorrextException If the provided password is incorrect.
+     * @throws PasswordIncorrectException If the provided password is incorrect.
      * @throws StudentNotExistException If the student does not exist.
      */
     @Transactional
     @Override
-    public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException {
+    public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException {
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isEmpty()) {
             throw new StudentNotExistException();
         }
         if (!BCrypt.checkpw(studentDto.password(), student.get().getPassword())) {
-            throw new PasswordIncorrextException();
+            throw new PasswordIncorrectException();
         }
         studentRepository.delete(student.get());
         return "The student has been deleted";
@@ -95,17 +95,17 @@ public class StudentService implements StudentServiceInterface {
      * @param id The ID of the student to update.
      * @param studentUpdateDto DTO containing updated student information.
      * @return Confirmation message upon successful update.
-     * @throws PasswordIncorrextException If the provided password is incorrect.
+     * @throws PasswordIncorrectException If the provided password is incorrect.
      */
     @Override
     @Transactional
-    public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException {
+    public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException {
         Student student = studentRepository.findById((long) id);
         if (student == null) {
             throw new StudentNotExistException();
         }
         if (!BCrypt.checkpw(studentUpdateDto.password(), student.getPassword())) {
-            throw new PasswordIncorrextException();
+            throw new PasswordIncorrectException();
         }
 
         // Update password if provided

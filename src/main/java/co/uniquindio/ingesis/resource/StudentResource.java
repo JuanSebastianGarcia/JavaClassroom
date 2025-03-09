@@ -2,7 +2,7 @@ package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
-import co.uniquindio.ingesis.exception.PasswordIncorrextException;
+import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.StudentExistException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
@@ -91,7 +91,7 @@ public class StudentResource {
         try {
             String student = studentService.updadateStudent(id, studentUpdateDto);
             return Response.status(Response.Status.CREATED).entity(student).build();
-        } catch (PasswordIncorrextException e) {
+        } catch (PasswordIncorrectException e) {
             return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         } catch (StudentNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
@@ -113,7 +113,7 @@ public class StudentResource {
         try {
             String respuesta = studentService.deleteStuddent(email, studentDto);
             return Response.status(Response.Status.OK).entity(respuesta).build();
-        } catch (PasswordIncorrextException e) {
+        } catch (PasswordIncorrectException e) {
             return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         } catch (StudentNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();

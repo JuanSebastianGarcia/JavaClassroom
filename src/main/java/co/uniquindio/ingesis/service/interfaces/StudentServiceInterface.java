@@ -2,7 +2,7 @@ package co.uniquindio.ingesis.service.interfaces;
 
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
-import co.uniquindio.ingesis.exception.PasswordIncorrextException;
+import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 
 /**
@@ -32,10 +32,10 @@ public interface StudentServiceInterface {
      * @param email The email of the student to be deleted.
      * @param studentDto DTO containing authentication data for validation.
      * @return A confirmation message upon successful deletion.
-     * @throws PasswordIncorrextException If the password provided is incorrect.
+     * @throws PasswordIncorrectException If the password provided is incorrect.
      * @throws StudentNotExistException If the student does not exist in the system.
      */
-    String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrextException, StudentNotExistException;
+    String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException;
 
     /**
      * Updates student details using their ID.
@@ -43,7 +43,7 @@ public interface StudentServiceInterface {
      * @param id The ID of the student to be updated.
      * @param studentUpdateDto DTO containing updated student details.
      * @return A confirmation message upon successful update.
-     * @throws PasswordIncorrextException If the password provided is incorrect.
+     * @throws PasswordIncorrectException If the password provided is incorrect.
      */
-    String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrextException;
+    String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException;
 }
