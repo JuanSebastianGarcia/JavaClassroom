@@ -13,6 +13,7 @@ import co.uniquindio.ingesis.dto.login.TokenResponseDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
+import co.uniquindio.ingesis.exception.TeacherNotExistException;
 import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.repository.StudentRepository;
@@ -105,7 +106,7 @@ public class AuthService implements AuthServiceInterface {
         Optional<Teacher> teacher = teacherRepository.findByEmail(loginDto.email());
 
         // Use orElseThrow to simplify optional handling
-        Teacher foundTeacher = teacher.orElseThrow(StudentNotExistException::new);
+        Teacher foundTeacher = teacher.orElseThrow(TeacherNotExistException::new);
 
         validatePassword(loginDto.password(), foundTeacher.getPassword());
 
@@ -122,11 +123,12 @@ public class AuthService implements AuthServiceInterface {
     public String generateToken(String email, String role) {
 
         return Jwts.builder()   
-                .setSubject("user123")
-                .setIssuer("javclassroom")
+                .setSubject(email)
+                .setIssuer("classroom")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000))) 
                 .signWith(getSigningKey()) 
+                .claim("role", role)
                 .compact();
 
     }
