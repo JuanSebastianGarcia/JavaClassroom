@@ -10,6 +10,7 @@ import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -62,7 +63,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method searches a teacher by document
      */
     @Override
-    @Transactional
+    @RolesAllowed({"teacher"}) 
     public TeacherDto getTeacher(TeacherDto teacherDto) {
 
         // Search teacher
@@ -81,6 +82,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method deletes a teacher
      */
     @Override
+    @RolesAllowed({"teacher"}) 
     @Transactional
     public String deleteTeacher(TeacherDto teacherDto) {
 
@@ -101,6 +103,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method updates a teacher's information
      */
     @Override
+    @RolesAllowed({"teacher"}) 
     @Transactional
     public String updateTeacher(TeacherDto teacherDto) {
 
@@ -116,6 +119,8 @@ public class TeacherService implements TeacherServiceInterface {
         teacher.setName(teacherDto.name());
         teacher.setEmail(teacherDto.email());
         teacher.setPassword(hashPassword(teacherDto.password()));
+
+        teacherRepository.persist(teacher);
 
         return "The teacher has been updated";
     }
