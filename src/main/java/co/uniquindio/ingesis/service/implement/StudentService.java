@@ -55,7 +55,7 @@ public class StudentService implements StudentServiceInterface {
      * @throws StudentExistException If a student with the same document already exists.
      */
     @Override
-    @RolesAllowed({"teacher"}) 
+    @RolesAllowed({"student"}) 
     @Transactional
     public String addStudent(StudentDto studentDto) throws StudentExistException {
         Student newStudent = buildStudentFromDto(studentDto);
@@ -85,7 +85,7 @@ public class StudentService implements StudentServiceInterface {
      * @throws StudentNotExistException If the student does not exist.
      */
     @Override
-    @RolesAllowed({"teacher"})    
+    @RolesAllowed({"student"})    
     @Transactional
     public StudentDto getStudent(String email) {
         Optional<Student> student = studentRepository.findByEmail(email);
@@ -124,7 +124,7 @@ public class StudentService implements StudentServiceInterface {
      */
     @Transactional
     @Override
-    @RolesAllowed({"teacher"}) 
+    @RolesAllowed({"student"}) 
     public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException {
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isEmpty()) {
@@ -146,7 +146,7 @@ public class StudentService implements StudentServiceInterface {
      * @throws PasswordIncorrectException If the provided password is incorrect.
      */
     @Override
-    @RolesAllowed({"teacher"}) 
+    @RolesAllowed({"student"}) 
     @Transactional
     public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException {
         Student student = studentRepository.findById((long) id);

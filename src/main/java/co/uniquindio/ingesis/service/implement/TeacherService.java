@@ -147,6 +147,6 @@ public class TeacherService implements TeacherServiceInterface {
      * This method builds a TeacherDto from a Teacher
      */
     private TeacherDto buildDtoFromTeacher(Teacher teacher) {
-        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "");
+        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "", teacher.getStatus());
     }
 }
