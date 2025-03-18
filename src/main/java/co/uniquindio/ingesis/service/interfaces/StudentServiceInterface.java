@@ -1,5 +1,8 @@
 package co.uniquindio.ingesis.service.interfaces;
 
+import java.util.List;
+
+import co.uniquindio.ingesis.dto.studentResource.GetAllDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
@@ -46,4 +49,13 @@ public interface StudentServiceInterface {
      * @throws PasswordIncorrectException If the password provided is incorrect.
      */
     String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException;
+
+
+
+    /**
+     * Retrieves all students in the system.
+     *
+     * @return List of DTOs containing student details.
+     */
+    List<StudentDto> getAllStudents(GetAllDto getAllDto);
 }

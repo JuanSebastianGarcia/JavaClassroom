@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.resource;
 
+import co.uniquindio.ingesis.dto.studentResource.GetAllDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
@@ -118,6 +119,19 @@ public class StudentResource {
             return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         } catch (StudentNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+
+
+
+    @GET
+    @Path("/all")
+    public Response getAllStudents(GetAllDto getAllDto) {
+        try {
+            return Response.status(Response.Status.OK).entity(studentService.getAllStudents(getAllDto)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

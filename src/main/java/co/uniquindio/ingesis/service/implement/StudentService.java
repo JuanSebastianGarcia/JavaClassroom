@@ -1,6 +1,9 @@
 package co.uniquindio.ingesis.service.implement;
 
+import java.util.List;
 import java.util.Optional;
+
+import co.uniquindio.ingesis.dto.studentResource.GetAllDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentUpdateDto;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
@@ -91,6 +94,24 @@ public class StudentService implements StudentServiceInterface {
         }
         return buildDtoFromStudent(student.get());
     }
+
+
+
+    /**
+     * Retrieves all students in the system.
+     *
+     * @return List of DTOs containing student details.
+     */
+    @Override
+    public List<StudentDto> getAllStudents(GetAllDto getAllDto) {
+        
+        return studentRepository.findAll()
+        .page(getAllDto.page(), 10) 
+        .stream()
+        .map(this::buildDtoFromStudent)
+        .toList();
+    }
+
 
     /**
      * Deletes a student from the system after verifying credentials.
@@ -184,4 +205,8 @@ public class StudentService implements StudentServiceInterface {
     private StudentDto buildDtoFromStudent(Student student) {
         return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "",student.getStatus());
     }
+
+
+
+
 }
