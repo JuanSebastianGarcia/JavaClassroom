@@ -21,22 +21,20 @@ import java.util.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-// Import MicroProfile configuration for environment variable injection
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider // Marks this class as a JAX-RS provider
 @Priority(Priorities.AUTHENTICATION) // Ensures this filter is executed at the authentication stage
 public class JwtFilter implements ContainerRequestFilter {
 
-    @ConfigProperty(name = "jwt.secret.key") // Injects the JWT secret key from configuration
-    private String SECRET_KEY;
+    private String SECRET_KEY= org.eclipse.microprofile.config.ConfigProvider.getConfig()
+    .getValue("jwt.secret.key", String.class);
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String path = requestContext.getUriInfo().getPath();
 
         // Bypass authentication for endpoints related to "auth"
-        if (path.contains("auth")) {
+        if (path.contains("auth") || path.contains("health") ) {
             return;
         }
 

@@ -1,7 +1,7 @@
 package co.uniquindio.ingesis.dto.studentResource;
 
-import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Data Transfer Object (DTO) for pagination when retrieving all students.
