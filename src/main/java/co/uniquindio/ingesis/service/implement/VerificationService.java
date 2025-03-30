@@ -21,13 +21,9 @@ public class VerificationService implements VerificationServiceInterface {
     @Inject
     Mailer mailer;
 
-    private final StudentRepository studentRepository;
-
+    
     @Inject
-    public VerificationService(StudentRepository studentRepository, Mailer mailer) {
-        this.studentRepository = studentRepository;
-        this.mailer = mailer;
-    }
+    StudentRepository studentRepository;
 
     /**
      * Generates a verification code and sends a verification email to the user.
