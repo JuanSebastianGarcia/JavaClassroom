@@ -12,13 +12,16 @@ import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.mindrot.jbcrypt.BCrypt;
-import org.tinylog.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /*
  * This service is responsible for managing teachers
  */
 @ApplicationScoped
 public class TeacherService implements TeacherServiceInterface {
+
+    private static final Logger logger = LogManager.getLogger(TeacherService.class);
 
     private TeacherRepository teacherRepository;
 
@@ -37,18 +40,18 @@ public class TeacherService implements TeacherServiceInterface {
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
 
         Teacher new_teacher = buildTeacherFromDto(teacherDto);
-        Logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
+        logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
 
         // Search teacher
         Optional<Teacher> teacher_exist = teacherRepository.findByCedula(new_teacher.getCedula());
 
         if (teacher_exist.isPresent()) {
-            Logger.warn("Teacher with Cedula {} already exists", new_teacher.getCedula());
+            logger.warn("Teacher with Cedula {} already exists", new_teacher.getCedula());
             throw new TeacherExistException();
         }
 
         teacherRepository.persist(new_teacher);
-        Logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
+        logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
 
         return "The teacher has been created";
     }
@@ -59,16 +62,16 @@ public class TeacherService implements TeacherServiceInterface {
     @Override
     @RolesAllowed({"teacher"}) 
     public TeacherDto getTeacher(TeacherDto teacherDto) {
-        Logger.info("Fetching teacher with Cedula: {}", teacherDto.cedula());
+        logger.info("Fetching teacher with Cedula: {}", teacherDto.cedula());
 
         Optional<Teacher> teacher = teacherRepository.findByCedula(teacherDto.cedula());
 
         if (teacher.isEmpty()) {
-            Logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
+            logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
             throw new TeacherNotExistException();
         }
 
-        Logger.info("Teacher with Cedula {} found successfully", teacherDto.cedula());
+        logger.info("Teacher with Cedula {} found successfully", teacherDto.cedula());
         return buildDtoFromTeacher(teacher.get());
     }
 
@@ -79,17 +82,17 @@ public class TeacherService implements TeacherServiceInterface {
     @RolesAllowed({"teacher"}) 
     @Transactional
     public String deleteTeacher(TeacherDto teacherDto) {
-        Logger.info("Attempting to delete teacher with Cedula: {}", teacherDto.cedula());
+        logger.info("Attempting to delete teacher with Cedula: {}", teacherDto.cedula());
 
         Optional<Teacher> teacher = teacherRepository.findByCedula(teacherDto.cedula());
 
         if (teacher.isEmpty()) {
-            Logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
+            logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
             throw new TeacherNotExistException();
         }
 
         teacherRepository.delete(teacher.get());
-        Logger.info("Teacher with Cedula {} deleted successfully", teacherDto.cedula());
+        logger.info("Teacher with Cedula {} deleted successfully", teacherDto.cedula());
 
         return "The teacher has been deleted";
     }
@@ -101,12 +104,12 @@ public class TeacherService implements TeacherServiceInterface {
     @RolesAllowed({"teacher"}) 
     @Transactional
     public String updateTeacher(TeacherDto teacherDto) {
-        Logger.info("Attempting to update teacher with Cedula: {}", teacherDto.cedula());
+        logger.info("Attempting to update teacher with Cedula: {}", teacherDto.cedula());
 
         Optional<Teacher> teacher_optional = teacherRepository.findByCedula(teacherDto.cedula());
 
         if (teacher_optional.isEmpty()) {
-            Logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
+            logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
             throw new TeacherNotExistException();
         }
 
@@ -116,7 +119,7 @@ public class TeacherService implements TeacherServiceInterface {
         teacher.setPassword(hashPassword(teacherDto.password()));
         teacherRepository.persist(teacher);
 
-        Logger.info("Teacher with Cedula {} updated successfully", teacherDto.cedula());
+        logger.info("Teacher with Cedula {} updated successfully", teacherDto.cedula());
         return "The teacher has been updated";
     }
 

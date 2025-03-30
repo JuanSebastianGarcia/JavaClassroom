@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" monitorInterval="30">
+    
+    <Appenders>
+        <!-- Log en consola -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>{"timestamp":"%d{yyyy-MM-dd HH:mm:ss}","level":"%p","class":"%c","method":"%M","message":"%m"}%n</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <!-- Log en archivo con rotación diaria -->
+        <RollingFile name="File" fileName="logs/app.log"
+                     filePattern="logs/app-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout>
+                <Pattern>{"timestamp":"%d{yyyy-MM-dd HH:mm:ss}","level":"%p","class":"%c","method":"%M","message":"%m"}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Nivel por defecto para toda la aplicación -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+
+        <!-- Logs específicos por paquete -->
+        <Logger name="co.uniquindio.ingesis" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+    </Loggers>
+
+</Configuration>

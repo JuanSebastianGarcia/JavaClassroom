@@ -29,20 +29,7 @@ public class StudentService implements StudentServiceInterface {
     private StudentRepository studentRepository;
 
     @Inject
-    private final VerificationService verificationService;
-
-    /**
-     * Constructor for dependency injection.
-     *
-     * @param studentRepository Repository for accessing student data.
-     */
-    public StudentService(StudentRepository studentRepository, VerificationService verificationService) {
-        this.studentRepository = studentRepository;
-        this.verificationService = verificationService;
-    
-    }
-
-
+    private VerificationService verificationService;
 
     /**
      * Adds a new student to the system, ensuring no duplicates exist.
