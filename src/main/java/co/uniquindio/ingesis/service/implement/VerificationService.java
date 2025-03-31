@@ -8,8 +8,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import co.uniquindio.ingesis.model.Student;
+import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
+import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.VerificationServiceInterface;
 
 /**
@@ -24,6 +26,9 @@ public class VerificationService implements VerificationServiceInterface {
     
     @Inject
     StudentRepository studentRepository;
+
+    @Inject
+    TeacherRepository teacherRepository;
 
     /**
      * Generates a verification code and sends a verification email to the user.
@@ -53,14 +58,22 @@ public class VerificationService implements VerificationServiceInterface {
     @Transactional
     public void verifyAccount(String email, String verificationCode) {
 
-        Optional<Student>student = studentRepository.findByEmail(email);
-
-        if(student.isPresent() && student.get().getToken().equals(verificationCode)) {
+            // Verificar estudiantes
+        Optional<Student> student = studentRepository.findByEmail(email);
+        if (student.isPresent() && student.get().getToken().equals(verificationCode)) {
             student.get().setStatus(StatusAcountEnum.ACTIVE);
             studentRepository.persist(student.get());
-        } else {
-            throw new IllegalArgumentException("Invalid verification code");
+            return;
         }
-        
+
+        // Verificar profesores
+        Optional<Teacher> teacher = teacherRepository.findByEmail(email);
+        if (teacher.isPresent() && teacher.get().getToken().equals(verificationCode)) {
+            teacher.get().setStatus(StatusAcountEnum.ACTIVE);
+            teacherRepository.persist(teacher.get());
+            return;
+        }
+
+        throw new IllegalArgumentException("Invalid verification code");
     }
 }
