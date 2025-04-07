@@ -32,12 +32,18 @@ public class JwtFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String path = requestContext.getUriInfo().getPath();
         String method = requestContext.getMethod(); //  Obtener el método HTTP de la solicitud
-        System.out.println("🔍 Request Intercepted Path: '" + path + "'"); //  Imprimir ruta
+        System.out.println(" Request Intercepted Path: '" + path + "'"); //  Imprimir ruta
+
+    // Excluir todos los endpoints bajo "/program"
+    if (path.startsWith("program") || path.startsWith("/program")) {
+        System.out.println("Skipping JWT check for path: " + path);
+        return; // No hacer nada y continuar con la ejecución normal
+    }
 
         if (path.equals("/verify") || path.startsWith("/verify?") || 
         path.equals("/auth") || path.startsWith("/auth/") || 
         (path.equals("/teacher") && ("POST".equals(method) || "GET".equals(method)))) { 
-        System.out.println("✅ Skipping JWT check for: " + method + " " + path);
+        System.out.println(" Skipping JWT check for: " + method + " " + path);
         return;
     }
         //  Si llega aquí, significa que está pidiendo autenticación

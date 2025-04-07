@@ -1,56 +1,10 @@
-{"timestamp":"2025-03-30 16:17:58","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678930"}
-{"timestamp":"2025-03-30 16:17:59","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678930 found successfully"}
-{"timestamp":"2025-03-30 16:19:09","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678910"}
-{"timestamp":"2025-03-30 16:19:09","level":"WARN","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678910 not found"}
-{"timestamp":"2025-03-30 17:13:16","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Attempting to create teacher with Cedula: 12345678935"}
-{"timestamp":"2025-03-30 17:13:20","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Teacher created successfully with Cedula: 12345678935"}
-{"timestamp":"2025-03-30 17:13:48","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678935"}
-{"timestamp":"2025-03-30 17:13:48","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678935 found successfully"}
-{"timestamp":"2025-03-30 17:18:12","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Attempting to create teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:18:14","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Teacher created successfully with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:18:22","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:18:22","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:31:20","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:31:21","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:34:27","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:34:27","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:36:07","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:36:08","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:41:56","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:41:56","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:47:06","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:47:06","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 17:48:38","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 17:48:38","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 19:17:18","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Attempting to update teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 19:17:18","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Teacher with Cedula 12345678936 updated successfully"}
-{"timestamp":"2025-03-30 19:17:26","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 19:17:26","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678936 found successfully"}
-{"timestamp":"2025-03-30 19:17:39","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Attempting to update teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 19:17:40","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Teacher with Cedula 12345678936 updated successfully"}
-{"timestamp":"2025-03-30 19:18:00","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Attempting to update teacher with Cedula: 12345678936"}
-{"timestamp":"2025-03-30 19:18:00","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Teacher with Cedula 12345678936 updated successfully"}
-{"timestamp":"2025-03-30 19:18:36","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678930"}
-{"timestamp":"2025-03-30 19:18:36","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678930 found successfully"}
-{"timestamp":"2025-03-30 19:18:46","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"deleteTeacher","message":"Attempting to delete teacher with Cedula: 12345678930"}
-{"timestamp":"2025-03-30 19:18:46","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"deleteTeacher","message":"Teacher with Cedula 12345678930 deleted successfully"}
-{"timestamp":"2025-03-30 19:18:50","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678930"}
-{"timestamp":"2025-03-30 19:18:50","level":"WARN","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678930 not found"}
-{"timestamp":"2025-03-30 19:51:17","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Attempting to create teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 19:51:20","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Teacher created successfully with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 19:57:30","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 19:57:30","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
-{"timestamp":"2025-03-30 19:59:03","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Attempting to update teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 19:59:04","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"updateTeacher","message":"Teacher with Cedula 12345678939 updated successfully"}
-{"timestamp":"2025-03-30 19:59:12","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 19:59:12","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
-{"timestamp":"2025-03-30 20:01:55","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"deleteTeacher","message":"Attempting to delete teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:01:55","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"deleteTeacher","message":"Teacher with Cedula 12345678939 deleted successfully"}
-{"timestamp":"2025-03-30 20:02:05","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:02:05","level":"WARN","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 not found"}
-{"timestamp":"2025-03-30 20:02:39","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Attempting to create teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:02:41","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"addTeacher","message":"Teacher created successfully with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:02:44","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:02:44","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
-{"timestamp":"2025-03-30 20:03:21","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
-{"timestamp":"2025-03-30 20:03:21","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
+{"timestamp":"2025-04-03 12:15:56","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
+{"timestamp":"2025-04-03 12:15:56","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
+{"timestamp":"2025-04-03 12:17:57","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
+{"timestamp":"2025-04-03 12:17:57","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
+{"timestamp":"2025-04-03 12:18:54","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
+{"timestamp":"2025-04-03 12:18:54","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
+{"timestamp":"2025-04-03 12:18:59","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678910"}
+{"timestamp":"2025-04-03 12:18:59","level":"WARN","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678910 not found"}
+{"timestamp":"2025-04-03 16:11:41","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Fetching teacher with Cedula: 12345678939"}
+{"timestamp":"2025-04-03 16:11:42","level":"INFO","class":"co.uniquindio.ingesis.service.implement.TeacherService","method":"getTeacher","message":"Teacher with Cedula 12345678939 found successfully"}
