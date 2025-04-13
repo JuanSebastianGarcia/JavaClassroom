@@ -21,8 +21,14 @@ import org.apache.logging.log4j.LogManager;
 @ApplicationScoped
 public class TeacherService implements TeacherServiceInterface {
 
+    /*
+     * Logger for this class
+     */
     private static final Logger logger = LogManager.getLogger(TeacherService.class);
 
+    /*
+     * Teacher repository for database operations
+     */
     private TeacherRepository teacherRepository;
 
     /*

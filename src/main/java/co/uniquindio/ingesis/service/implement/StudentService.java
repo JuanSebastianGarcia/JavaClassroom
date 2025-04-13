@@ -13,11 +13,12 @@ import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Service responsible for handling student management operations.
@@ -31,8 +32,17 @@ public class StudentService implements StudentServiceInterface {
     @Inject
     private StudentRepository studentRepository;
 
+    /**
+     * Service for handling email verification.
+     */
     @Inject
     private VerificationService verificationService;
+
+
+    /**
+     * Logger for tracking service operations.
+     */
+    private static final Logger logger = LogManager.getLogger(TeacherService.class);
 
     /**
      * Adds a new student to the system, ensuring no duplicates exist.
@@ -42,14 +52,16 @@ public class StudentService implements StudentServiceInterface {
      * @throws StudentExistException If a student with the same document already exists.
      */
     @Override
-    @RolesAllowed({"student"}) 
     @Transactional
     public String addStudent(StudentDto studentDto) throws StudentExistException {
+        
         Student newStudent = buildStudentFromDto(studentDto);
+        logger.info("Attempting to create student with Cedula: {}", newStudent.getDocument());
 
         // Check if the student already exists
         Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
         if (existingStudent.isPresent()) {
+            logger.error(":the document has alredy exist {}", newStudent.getDocument());
             throw new StudentExistException();
         }
 
@@ -71,10 +83,11 @@ public class StudentService implements StudentServiceInterface {
      * @return DTO containing student details.
      * @throws StudentNotExistException If the student does not exist.
      */
-    @Override
-    @RolesAllowed({"student"})    
+    @Override 
     @Transactional
     public StudentDto getStudent(String email) {
+        logger.info("Attempting to search a student: {}", email);
+
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isEmpty()) {
             throw new StudentNotExistException();
@@ -92,6 +105,9 @@ public class StudentService implements StudentServiceInterface {
     @Override
     public List<StudentDto> getAllStudents(GetAllDto getAllDto) {
         
+        logger.info("Attempting to search all students");
+
+
         return studentRepository.findAll()
         .page(getAllDto.page(), 10) 
         .stream()
@@ -111,8 +127,10 @@ public class StudentService implements StudentServiceInterface {
      */
     @Transactional
     @Override
-    @RolesAllowed({"student"}) 
     public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException {
+        
+        logger.info("Attempting to delete student with Cedula: {}", studentDto.cedula());
+
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isEmpty()) {
             throw new StudentNotExistException();
@@ -124,6 +142,7 @@ public class StudentService implements StudentServiceInterface {
         return "The student has been deleted";
     }
 
+
     /**
      * Updates an existing student's details.
      *
@@ -133,9 +152,11 @@ public class StudentService implements StudentServiceInterface {
      * @throws PasswordIncorrectException If the provided password is incorrect.
      */
     @Override
-    @RolesAllowed({"student"}) 
     @Transactional
     public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException {
+        
+        logger.info("Attempting to update student with ID: {}", id);
+
         Student student = studentRepository.findById((long) id);
         if (student == null) {
             throw new StudentNotExistException();
