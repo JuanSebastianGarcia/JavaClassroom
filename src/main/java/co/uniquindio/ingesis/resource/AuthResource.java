@@ -1,5 +1,6 @@
 package co.uniquindio.ingesis.resource;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -25,6 +26,7 @@ import co.uniquindio.ingesis.service.implement.AuthService;
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@PermitAll  // Permite acceso sin autenticación
 public class AuthResource {
 
     @Inject

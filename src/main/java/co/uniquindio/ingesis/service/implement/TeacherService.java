@@ -9,8 +9,11 @@ import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.TeacherServiceInterface;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +34,9 @@ public class TeacherService implements TeacherServiceInterface {
      */
     private TeacherRepository teacherRepository;
 
+    @Inject
+    private VerificationService verificationService;
+
     /*
      * Constructor with dependency injection
      */
@@ -42,6 +48,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method adds a new teacher and validates it
      */
     @Override
+    @PermitAll  // Permite acceso sin autenticación
     @Transactional
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
 
@@ -56,6 +63,8 @@ public class TeacherService implements TeacherServiceInterface {
             throw new TeacherExistException();
         }
 
+         // Send verification email
+        new_teacher.setToken(verificationService.sendVerificationEmail(new_teacher.getEmail()));
         teacherRepository.persist(new_teacher);
         logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
 
@@ -66,6 +75,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method searches a teacher by document
      */
     @Override
+    @PermitAll 
     @RolesAllowed({"teacher"}) 
     public TeacherDto getTeacher(TeacherDto teacherDto) {
         logger.info("Fetching teacher with Cedula: {}", teacherDto.cedula());
