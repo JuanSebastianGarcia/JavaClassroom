@@ -1,6 +1,8 @@
 package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import jakarta.transaction.Transactional;
 import co.uniquindio.ingesis.dto.teacherResource.TeacherDto;
 import co.uniquindio.ingesis.exception.TeacherExistException;
@@ -48,29 +50,42 @@ public class TeacherService implements TeacherServiceInterface {
      * This method adds a new teacher and validates it
      */
     @Override
-    @PermitAll  // Permite acceso sin autenticación
-    @Transactional
+    @PermitAll
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
-
-        Teacher new_teacher = buildTeacherFromDto(teacherDto);
-        logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
-
-        // Search teacher
-        Optional<Teacher> teacher_exist = teacherRepository.findByCedula(new_teacher.getCedula());
-
-        if (teacher_exist.isPresent()) {
-            logger.warn("Teacher with Cedula {} already exists", new_teacher.getCedula());
-            throw new TeacherExistException();
+        // Ejecuta en una nueva transacción
+        String token = createTeacherTransactional(teacherDto);
+    
+        // Envío fuera de la transacción principal
+        try {
+            verificationService.sendVerificationEmail(teacherDto.email(), token);
+            logger.info("Correo de verificación enviado a {}", teacherDto.email());
+        } catch (Exception e) {
+            logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
         }
-
-         // Send verification email
-        new_teacher.setToken(verificationService.sendVerificationEmail(new_teacher.getEmail()));
-        teacherRepository.persist(new_teacher);
-        logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
-
+    
         return "The teacher has been created";
     }
-
+    
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW)
+    public String createTeacherTransactional(TeacherDto teacherDto) throws TeacherExistException {
+        Teacher new_teacher = buildTeacherFromDto(teacherDto);
+        logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
+    
+        Optional<Teacher> teacher_exist = teacherRepository.findByCedula(new_teacher.getCedula());
+        if (teacher_exist.isPresent()) {
+            throw new TeacherExistException();
+        }
+    
+        String token = UUID.randomUUID().toString();
+        new_teacher.setToken(token);
+    
+        teacherRepository.persist(new_teacher);
+        logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
+    
+        return token;
+    }
+    
+    
     /*
      * This method searches a teacher by document
      */

@@ -8,7 +8,8 @@ public interface VerificationServiceInterface {
      * @param email The email to send the verification email to.
      * @return The verification code sent to the user.
      */
-    String sendVerificationEmail(String email);
+    String sendVerificationEmail(String email, String token);
+
 
 
     /**

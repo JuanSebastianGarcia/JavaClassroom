@@ -36,7 +36,7 @@ public class StudentService implements StudentServiceInterface {
      * Service for handling email verification.
      */
     @Inject
-    private VerificationService verificationService;
+//    private VerificationService verificationService;
 
 
     /**
@@ -66,7 +66,7 @@ public class StudentService implements StudentServiceInterface {
         }
 
         // Send verification email
-        newStudent.setToken(verificationService.sendVerificationEmail(newStudent.getEmail()));
+   //     newStudent.setToken(verificationService.sendVerificationEmail(newStudent.getEmail()));
 
         // Persist new student
         studentRepository.persist(newStudent);

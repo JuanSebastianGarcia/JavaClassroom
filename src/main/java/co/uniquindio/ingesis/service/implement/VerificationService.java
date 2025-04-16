@@ -2,11 +2,14 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
 import java.util.UUID;
-import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.Mailer;
+
+import co.uniquindio.ingesis.dto.MensajeDTO;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+
 import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.Teacher;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
@@ -14,51 +17,50 @@ import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.repository.TeacherRepository;
 import co.uniquindio.ingesis.service.interfaces.VerificationServiceInterface;
 
-/**
- * Implementation of the verification service for handling user email verification.
- */
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @ApplicationScoped
 public class VerificationService implements VerificationServiceInterface {
 
-    @Inject
-    Mailer mailer;
-
-    
     @Inject
     StudentRepository studentRepository;
 
     @Inject
     TeacherRepository teacherRepository;
 
-    /**
-     * Generates a verification code and sends a verification email to the user.
-     * 
-     * @param email The recipient's email address.
-     * @return The generated verification code.
-     */
-    @Override
-    public String sendVerificationEmail(String email) {
-        String verificationCode = UUID.randomUUID().toString();
-        String verificationLink = verificationCode;
+    @Inject
+    @Channel("canal-mensajes-out")  // Este nombre lo usarás en application.properties
+    Emitter<String> mensajeEmitter;
 
-        mailer.send(
-            Mail.withText(email, "Verifica tu cuenta", "Tu codigo de verificacion es: " + verificationLink)
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public String sendVerificationEmail(String email, String tocken) {
+        String verificationCode = UUID.randomUUID().toString();
+
+        MensajeDTO mensaje = new MensajeDTO(
+            "EMAIL",
+            email,
+            "Tu código de verificación es: " + verificationCode,
+            "Verifica tu cuenta"
         );
+
+        try {
+            String json = objectMapper.writeValueAsString(mensaje);
+            System.out.println("Enviando mensaje: " + json);
+            mensajeEmitter.send(json);
+            System.out.println("Mensaje enviado " + json);
+            
+        } catch (Exception e) {
+            e.printStackTrace(); // Puedes lanzar una excepción si quieres manejarlo mejor
+        }
 
         return verificationCode;
     }
 
-    /**
-     * Validates the verification code and activates the user's account.
-     * 
-     * @param email The user's email address.
-     * @param verificationCode The code that was sent to the user.
-     */
     @Override
     @Transactional
     public void verifyAccount(String email, String verificationCode) {
-
-            // Verificar estudiantes
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isPresent() && student.get().getToken().equals(verificationCode)) {
             student.get().setStatus(StatusAcountEnum.ACTIVE);
@@ -66,7 +68,6 @@ public class VerificationService implements VerificationServiceInterface {
             return;
         }
 
-        // Verificar profesores
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
         if (teacher.isPresent() && teacher.get().getToken().equals(verificationCode)) {
             teacher.get().setStatus(StatusAcountEnum.ACTIVE);
