@@ -2,6 +2,7 @@ package co.uniquindio.ingesis.service.implement;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import co.uniquindio.ingesis.dto.studentResource.GetAllDto;
 import co.uniquindio.ingesis.dto.studentResource.StudentDto;
@@ -13,6 +14,7 @@ import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import co.uniquindio.ingesis.repository.StudentRepository;
 import co.uniquindio.ingesis.service.interfaces.StudentServiceInterface;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,7 +38,8 @@ public class StudentService implements StudentServiceInterface {
      * Service for handling email verification.
      */
     @Inject
-//    private VerificationService verificationService;
+    private VerificationService verificationService;
+
 
 
     /**
@@ -51,28 +54,44 @@ public class StudentService implements StudentServiceInterface {
      * @return Confirmation message upon successful creation.
      * @throws StudentExistException If a student with the same document already exists.
      */
-    @Override
-    @Transactional
-    public String addStudent(StudentDto studentDto) throws StudentExistException {
-        
-        Student newStudent = buildStudentFromDto(studentDto);
-        logger.info("Attempting to create student with Cedula: {}", newStudent.getDocument());
+ @Override
+@PermitAll
+public String addStudent(StudentDto studentDto) throws StudentExistException {
+    // Ejecuta en una nueva transacción
+    String token = createStudentTransactional(studentDto);
 
-        // Check if the student already exists
-        Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
-        if (existingStudent.isPresent()) {
-            logger.error(":the document has alredy exist {}", newStudent.getDocument());
-            throw new StudentExistException();
-        }
-
-        // Send verification email
-   //     newStudent.setToken(verificationService.sendVerificationEmail(newStudent.getEmail()));
-
-        // Persist new student
-        studentRepository.persist(newStudent);
-
-        return "The student has been created";
+    // Envío fuera de la transacción principal
+    try {
+        verificationService.sendVerificationEmail(studentDto.email(), token);
+        logger.info("Correo de verificación enviado a {}", studentDto.email());
+    } catch (Exception e) {
+        logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
     }
+
+    return "The student has been created";
+}
+
+@Transactional(value = Transactional.TxType.REQUIRES_NEW)
+public String createStudentTransactional(StudentDto studentDto) throws StudentExistException {
+    Student newStudent = buildStudentFromDto(studentDto);
+    logger.info("Attempting to create student with Cedula: {}", newStudent.getDocument());
+
+    Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
+    if (existingStudent.isPresent()) {
+        logger.error("The document already exists: {}", newStudent.getDocument());
+        throw new StudentExistException();
+    }
+
+    // Generar y asignar token
+    String token = UUID.randomUUID().toString();
+    newStudent.setToken(token);
+
+    // Persistir estudiante
+    studentRepository.persist(newStudent);
+    logger.info("Student created successfully with Cedula: {}", newStudent.getDocument());
+
+    return token;
+}
 
 
     
