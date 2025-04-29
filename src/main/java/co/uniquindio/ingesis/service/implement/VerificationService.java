@@ -1,7 +1,6 @@
 package co.uniquindio.ingesis.service.implement;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import co.uniquindio.ingesis.dto.MensajeDTO;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -29,52 +28,61 @@ public class VerificationService implements VerificationServiceInterface {
     TeacherRepository teacherRepository;
 
     @Inject
-    @Channel("canal-mensajes-out")  // Este nombre lo usarás en application.properties
+    @Channel("canal-mensajes-out")
     Emitter<String> mensajeEmitter;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String sendVerificationEmail(String email, String tocken) {
-        String verificationCode = UUID.randomUUID().toString();
+    public String sendVerificationEmail(String email, String token) {
 
         MensajeDTO mensaje = new MensajeDTO(
-            "EMAIL",
-            email,
-            "Tu código de verificación es: " + verificationCode,
-            "Verifica tu cuenta"
-        );
+                "EMAIL",
+                email,
+                "Tu código de verificación es: " + token,
+                "Verifica tu cuenta");
 
         try {
             String json = objectMapper.writeValueAsString(mensaje);
             System.out.println("Enviando mensaje: " + json);
             mensajeEmitter.send(json);
             System.out.println("Mensaje enviado " + json);
-            
+
         } catch (Exception e) {
-            e.printStackTrace(); // Puedes lanzar una excepción si quieres manejarlo mejor
+            e.printStackTrace();
         }
 
-        return verificationCode;
+        return token;
     }
 
     @Override
     @Transactional
     public void verifyAccount(String email, String verificationCode) {
         Optional<Student> student = studentRepository.findByEmail(email);
-        if (student.isPresent() && student.get().getToken().equals(verificationCode)) {
-            student.get().setStatus(StatusAcountEnum.ACTIVE);
-            studentRepository.persist(student.get());
-            return;
+        if (student.isPresent()) {
+            System.out.println("Código de verificación para estudiante: " + verificationCode); // Imprimir el código
+            System.out.println("Token almacenado para estudiante: " + student.get().getToken()); // Imprimir token
+                                                                                                 // almacenado
+            if (student.get().getToken().equals(verificationCode)) {
+                student.get().setStatus(StatusAcountEnum.ACTIVE);
+                studentRepository.persist(student.get());
+                return;
+            }
         }
 
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
-        if (teacher.isPresent() && teacher.get().getToken().equals(verificationCode)) {
-            teacher.get().setStatus(StatusAcountEnum.ACTIVE);
-            teacherRepository.persist(teacher.get());
-            return;
+        if (teacher.isPresent()) {
+            System.out.println("Código de verificación para profesor: " + verificationCode); // Imprimir el código
+            System.out.println("Token almacenado para profesor: " + teacher.get().getToken()); // Imprimir token
+                                                                                               // almacenado
+            if (teacher.get().getToken().equals(verificationCode)) {
+                teacher.get().setStatus(StatusAcountEnum.ACTIVE);
+                teacherRepository.persist(teacher.get());
+                return;
+            }
         }
 
         throw new IllegalArgumentException("Invalid verification code");
     }
+
 }

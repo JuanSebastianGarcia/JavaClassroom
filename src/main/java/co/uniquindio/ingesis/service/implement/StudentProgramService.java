@@ -1,6 +1,8 @@
 package co.uniquindio.ingesis.service.implement;
 
+import java.util.List;
 
+import co.uniquindio.ingesis.dto.ReportResource.ResolvedProgramReportDto;
 import co.uniquindio.ingesis.model.Program;
 import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.model.StudentProgram;
@@ -29,14 +31,14 @@ public class StudentProgramService implements StudentProgramServiceInterface {
     public void markProgramResolved(Long studentId, Long programId, Boolean resolved) {
         Student student = studentRepository.findById(studentId);
         Program program = programRepository.findById(programId);
-    
+
         if (student == null || program == null) {
             throw new IllegalArgumentException("Student or Program not found");
         }
-    
+
         StudentProgram sp = studentProgramRepository.findByStudentAndProgram(student.getId(), program.getId())
                 .orElse(new StudentProgram(null, student, program, false));
-    
+
         sp.setResolved(resolved);
         studentProgramRepository.persist(sp);
     }
@@ -52,6 +54,18 @@ public class StudentProgramService implements StudentProgramServiceInterface {
     @Transactional
     public void deleteProgramResolution(Long studentId, Long programId) {
         studentProgramRepository.findByStudentAndProgram(studentId.intValue(), programId.intValue())
-            .ifPresent(studentProgramRepository::delete);
+                .ifPresent(studentProgramRepository::delete);
     }
+
+    @Override
+    public List<ResolvedProgramReportDto> getResolvedProgramReport() {
+        return studentProgramRepository.countResolvedProgramsByStudent()
+                .stream()
+                .map(obj -> new ResolvedProgramReportDto(
+                        (Integer) obj[0],
+                        (String) obj[1],
+                        (Long) obj[2]))
+                .toList();
+    }
+
 }

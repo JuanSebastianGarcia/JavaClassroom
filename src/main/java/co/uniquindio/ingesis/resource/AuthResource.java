@@ -26,7 +26,7 @@ import co.uniquindio.ingesis.service.implement.AuthService;
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@PermitAll  // Permite acceso sin autenticación
+@PermitAll // Permite acceso sin autenticación
 public class AuthResource {
 
     @Inject
@@ -49,10 +49,9 @@ public class AuthResource {
             return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
         } catch (RoleUnknownException e) {
             return buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
-        }catch (AccountNotVerifiedException e) {
+        } catch (AccountNotVerifiedException e) {
             return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
-        } 
-        catch (Exception e) { // Catch-all for unexpected errors
+        } catch (Exception e) { // Catch-all for unexpected errors
             return buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         }
     }
@@ -60,7 +59,7 @@ public class AuthResource {
     /**
      * Utility method to build standardized error responses.
      *
-     * @param status The HTTP response status.
+     * @param status  The HTTP response status.
      * @param message The error message.
      * @return A Response object containing the error message.
      */

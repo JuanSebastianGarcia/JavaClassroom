@@ -28,16 +28,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.util.Base64;
 
 /**
- * AuthService is responsible for handling authentication logic, including login validation
+ * AuthService is responsible for handling authentication logic, including login
+ * validation
  * and JWT token generation for students and teachers.
  */
 @ApplicationScoped
 public class AuthService implements AuthServiceInterface {
 
-
     @ConfigProperty(name = "jwt.secret.key")
     private String SECRET_KEY;
-    
+
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
 
@@ -57,12 +57,13 @@ public class AuthService implements AuthServiceInterface {
      * 
      * @param loginDto The login credentials and role.
      * @return TokenResponseDto containing the JWT token.
-     * @throws RoleUnknownException       If the role provided is unknown.
-     * @throws PasswordIncorrectException If the password is incorrect.
-          * @throws AccountNotVerifiedException 
-          */
-         @Override
-         public TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException {
+     * @throws RoleUnknownException        If the role provided is unknown.
+     * @throws PasswordIncorrectException  If the password is incorrect.
+     * @throws AccountNotVerifiedException
+     */
+    @Override
+    public TokenResponseDto loginUser(LoginDto loginDto)
+            throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException {
         String role = loginDto.role();
         String token;
 
@@ -85,22 +86,25 @@ public class AuthService implements AuthServiceInterface {
      * 
      * @param loginDto The login credentials.
      * @return A JWT token for the student.
-     * @throws PasswordIncorrectException If the password is incorrect.
-          * @throws AccountNotVerifiedException 
-          */
-         private String generateTokenForStudent(LoginDto loginDto) throws PasswordIncorrectException, AccountNotVerifiedException {
+     * @throws PasswordIncorrectException  If the password is incorrect.
+     * @throws AccountNotVerifiedException
+     */
+    private String generateTokenForStudent(LoginDto loginDto)
+            throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Student> student = studentRepository.findByEmail(loginDto.email());
 
         // Use orElseThrow to simplify optional handling
         Student foundStudent = student.orElseThrow(StudentNotExistException::new);
 
-        if(student.get().getStatus().equals(StatusAcountEnum.PENDING)){
+        if (student.get().getStatus().equals(StatusAcountEnum.PENDING)) {
             throw new AccountNotVerifiedException();
         }
 
         validatePassword(loginDto.password(), foundStudent.getPassword());
 
-        return generateToken(foundStudent.getEmail(), "student");
+        System.out.println("Generating token with cedula: " + foundStudent.getDocument());
+        return generateToken(foundStudent.getEmail(), "student", foundStudent.getDocument());
+
     }
 
     /**
@@ -108,22 +112,23 @@ public class AuthService implements AuthServiceInterface {
      * 
      * @param loginDto The login credentials.
      * @return A JWT token for the teacher.
-     * @throws PasswordIncorrectException If the password is incorrect.
-          * @throws AccountNotVerifiedException 
-          */
-         private String generateTokenForTeacher(LoginDto loginDto) throws PasswordIncorrectException, AccountNotVerifiedException {
+     * @throws PasswordIncorrectException  If the password is incorrect.
+     * @throws AccountNotVerifiedException
+     */
+    private String generateTokenForTeacher(LoginDto loginDto)
+            throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Teacher> teacher = teacherRepository.findByEmail(loginDto.email());
 
         // Use orElseThrow to simplify optional handling
         Teacher foundTeacher = teacher.orElseThrow(TeacherNotExistException::new);
 
-        if(teacher.get().getStatus().equals(StatusAcountEnum.PENDING)){
+        if (teacher.get().getStatus().equals(StatusAcountEnum.PENDING)) {
             throw new AccountNotVerifiedException();
         }
 
         validatePassword(loginDto.password(), foundTeacher.getPassword());
-
-        return generateToken(foundTeacher.getEmail(), "teacher");
+        System.out.println("Generating token with cedula: " + foundTeacher.getCedula());
+        return generateToken(foundTeacher.getEmail(), "teacher", foundTeacher.getCedula());
     }
 
     /**
@@ -133,15 +138,21 @@ public class AuthService implements AuthServiceInterface {
      * @param role  The user's role.
      * @return A signed JWT token.
      */
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, String role, String cedula) {
 
-        return Jwts.builder()   
+        System.out.println("Generando token con:");
+        System.out.println("Email: " + email);
+        System.out.println("Role: " + role);
+        System.out.println("Cédula: " + cedula);
+
+        return Jwts.builder()
                 .setSubject(email)
                 .setIssuer("classroom")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000))) 
-                .signWith(getSigningKey()) 
+                .setExpiration(new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000)))
+                .signWith(getSigningKey())
                 .claim("role", role)
+                .claim("cedula", cedula)
                 .compact();
 
     }
@@ -149,8 +160,8 @@ public class AuthService implements AuthServiceInterface {
     /**
      * Validates a hashed password using BCrypt.
      * 
-     * @param rawPassword     The plain text password.
-     * @param hashedPassword  The hashed password stored in the database.
+     * @param rawPassword    The plain text password.
+     * @param hashedPassword The hashed password stored in the database.
      * @throws PasswordIncorrectException If the password does not match.
      */
     private void validatePassword(String rawPassword, String hashedPassword) throws PasswordIncorrectException {
@@ -158,7 +169,6 @@ public class AuthService implements AuthServiceInterface {
             throw new PasswordIncorrectException();
         }
     }
-
 
     /**
      * Converts the Base64-encoded string key into a SecretKey for JWT signing.
