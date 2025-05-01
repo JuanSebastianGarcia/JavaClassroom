@@ -25,9 +25,9 @@ import org.apache.logging.log4j.LogManager;
 /**
  * Service responsible for handling student management operations.
  */
-@ApplicationScoped 
+@ApplicationScoped
 public class StudentService implements StudentServiceInterface {
-    
+
     /**
      * Repository for accessing student data.
      */
@@ -40,8 +40,6 @@ public class StudentService implements StudentServiceInterface {
     @Inject
     private VerificationService verificationService;
 
-
-
     /**
      * Logger for tracking service operations.
      */
@@ -52,49 +50,48 @@ public class StudentService implements StudentServiceInterface {
      *
      * @param studentDto DTO containing student information.
      * @return Confirmation message upon successful creation.
-     * @throws StudentExistException If a student with the same document already exists.
+     * @throws StudentExistException If a student with the same document already
+     *                               exists.
      */
- @Override
-@PermitAll
-public String addStudent(StudentDto studentDto) throws StudentExistException {
-    // Ejecuta en una nueva transacción
-    String token = createStudentTransactional(studentDto);
+    @Override
+    @PermitAll
+    public String addStudent(StudentDto studentDto) throws StudentExistException {
+        // Ejecuta en una nueva transacción
+        String token = createStudentTransactional(studentDto);
 
-    // Envío fuera de la transacción principal
-    try {
-        verificationService.sendVerificationEmail(studentDto.email(), token);
-        logger.info("Correo de verificación enviado a {}", studentDto.email());
-    } catch (Exception e) {
-        logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
+        // Envío fuera de la transacción principal
+        try {
+            verificationService.sendVerificationEmail(studentDto.email(), token);
+            logger.info("Correo de verificación enviado a {}", studentDto.email());
+        } catch (Exception e) {
+            logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
+        }
+
+        return "The student has been created";
     }
 
-    return "The student has been created";
-}
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW)
+    public String createStudentTransactional(StudentDto studentDto) throws StudentExistException {
+        Student newStudent = buildStudentFromDto(studentDto);
+        logger.info("Attempting to create student with Cedula: {}", newStudent.getDocument());
 
-@Transactional(value = Transactional.TxType.REQUIRES_NEW)
-public String createStudentTransactional(StudentDto studentDto) throws StudentExistException {
-    Student newStudent = buildStudentFromDto(studentDto);
-    logger.info("Attempting to create student with Cedula: {}", newStudent.getDocument());
+        Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
+        if (existingStudent.isPresent()) {
+            logger.error("The document already exists: {}", newStudent.getDocument());
+            throw new StudentExistException();
+        }
 
-    Optional<Student> existingStudent = studentRepository.findByCedula(newStudent.getDocument());
-    if (existingStudent.isPresent()) {
-        logger.error("The document already exists: {}", newStudent.getDocument());
-        throw new StudentExistException();
+        // Generar y asignar token
+        String token = UUID.randomUUID().toString();
+        newStudent.setToken(token);
+
+        // Persistir estudiante
+        studentRepository.persist(newStudent);
+        logger.info("Student created successfully with Cedula: {}", newStudent.getDocument());
+
+        return token;
     }
 
-    // Generar y asignar token
-    String token = UUID.randomUUID().toString();
-    newStudent.setToken(token);
-
-    // Persistir estudiante
-    studentRepository.persist(newStudent);
-    logger.info("Student created successfully with Cedula: {}", newStudent.getDocument());
-
-    return token;
-}
-
-
-    
     /**
      * Retrieves a student's information by email.
      *
@@ -102,7 +99,7 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
      * @return DTO containing student details.
      * @throws StudentNotExistException If the student does not exist.
      */
-    @Override 
+    @Override
     @Transactional
     public StudentDto getStudent(String email) {
         logger.info("Attempting to search a student: {}", email);
@@ -114,8 +111,6 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
         return buildDtoFromStudent(student.get());
     }
 
-
-
     /**
      * Retrieves all students in the system.
      *
@@ -123,31 +118,30 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
      */
     @Override
     public List<StudentDto> getAllStudents(GetAllDto getAllDto) {
-        
+
         logger.info("Attempting to search all students");
 
-
         return studentRepository.findAll()
-        .page(getAllDto.page(), 10) 
-        .stream()
-        .map(this::buildDtoFromStudent)
-        .toList();
+                .page(getAllDto.page(), 10)
+                .stream()
+                .map(this::buildDtoFromStudent)
+                .toList();
     }
-
 
     /**
      * Deletes a student from the system after verifying credentials.
      *
-     * @param email The email of the student to delete.
+     * @param email      The email of the student to delete.
      * @param studentDto DTO containing authentication details.
      * @return Confirmation message upon successful deletion.
      * @throws PasswordIncorrectException If the provided password is incorrect.
-     * @throws StudentNotExistException If the student does not exist.
+     * @throws StudentNotExistException   If the student does not exist.
      */
     @Transactional
     @Override
-    public String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException {
-        
+    public String deleteStuddent(String email, StudentDto studentDto)
+            throws PasswordIncorrectException, StudentNotExistException {
+
         logger.info("Attempting to delete student with Cedula: {}", studentDto.cedula());
 
         Optional<Student> student = studentRepository.findByEmail(email);
@@ -161,45 +155,46 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
         return "The student has been deleted";
     }
 
-
     /**
      * Updates an existing student's details.
      *
-     * @param id The ID of the student to update.
+     * @param id               The ID of the student to update.
      * @param studentUpdateDto DTO containing updated student information.
      * @return Confirmation message upon successful update.
      * @throws PasswordIncorrectException If the provided password is incorrect.
      */
     @Override
     @Transactional
-    public String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException {
-        
-        logger.info("Attempting to update student with ID: {}", id);
+    public String updateStudent(StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException {
+        logger.info("Attempting to update student with Email: {}", studentUpdateDto.email());
 
-        Student student = studentRepository.findById((long) id);
-        if (student == null) {
+        Optional<Student> student_optional = studentRepository.findByEmail(studentUpdateDto.email());
+
+        if (student_optional.isEmpty()) {
+            logger.warn("Student with Emal {} not found", studentUpdateDto.email());
             throw new StudentNotExistException();
         }
+
+        Student student = student_optional.get();
+
         if (!BCrypt.checkpw(studentUpdateDto.password(), student.getPassword())) {
             throw new PasswordIncorrectException();
         }
 
-        // Update password if provided
         if (studentUpdateDto.new_password() != null && !studentUpdateDto.new_password().isEmpty()) {
             student.setPassword(hashPassword(studentUpdateDto.new_password()));
         }
 
-        // Update email if provided
         if (studentUpdateDto.email() != null && !studentUpdateDto.email().isEmpty()) {
             student.setEmail(studentUpdateDto.email());
         }
 
-        // Update name if provided
         if (studentUpdateDto.nombre() != null && !studentUpdateDto.nombre().isEmpty()) {
             student.setName(studentUpdateDto.nombre());
         }
 
         studentRepository.persist(student);
+        logger.info("Student with Cedula {} updated successfully", studentUpdateDto.email());
         return "The student has been updated";
     }
 
@@ -210,7 +205,8 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
      * @return A Student entity.
      */
     private Student buildStudentFromDto(StudentDto studentDto) {
-        return new Student(studentDto.id(), studentDto.cedula(), studentDto.name(), studentDto.email(), hashPassword(studentDto.password()),StatusAcountEnum.PENDING,"");
+        return new Student(studentDto.id(), studentDto.cedula(), studentDto.name(), studentDto.email(),
+                hashPassword(studentDto.password()), StatusAcountEnum.PENDING, "");
     }
 
     /**
@@ -230,10 +226,8 @@ public String createStudentTransactional(StudentDto studentDto) throws StudentEx
      * @return A DTO representation of the student.
      */
     private StudentDto buildDtoFromStudent(Student student) {
-        return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "",student.getStatus());
+        return new StudentDto(student.getId(), student.getDocument(), student.getName(), student.getEmail(), "",
+                student.getStatus());
     }
-
-
-
 
 }

@@ -32,25 +32,25 @@ public interface StudentServiceInterface {
     /**
      * Deletes a student from the system using their email.
      *
-     * @param email The email of the student to be deleted.
+     * @param email      The email of the student to be deleted.
      * @param studentDto DTO containing authentication data for validation.
      * @return A confirmation message upon successful deletion.
      * @throws PasswordIncorrectException If the password provided is incorrect.
-     * @throws StudentNotExistException If the student does not exist in the system.
+     * @throws StudentNotExistException   If the student does not exist in the
+     *                                    system.
      */
-    String deleteStuddent(String email, StudentDto studentDto) throws PasswordIncorrectException, StudentNotExistException;
+    String deleteStuddent(String email, StudentDto studentDto)
+            throws PasswordIncorrectException, StudentNotExistException;
 
     /**
      * Updates student details using their ID.
      *
-     * @param id The ID of the student to be updated.
+     * @param id               The ID of the student to be updated.
      * @param studentUpdateDto DTO containing updated student details.
      * @return A confirmation message upon successful update.
      * @throws PasswordIncorrectException If the password provided is incorrect.
      */
-    String updadateStudent(int id, StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException;
-
-
+    String updateStudent(StudentUpdateDto studentUpdateDto) throws PasswordIncorrectException;
 
     /**
      * Retrieves all students in the system.

@@ -45,7 +45,8 @@ public class StudentResource {
      * Endpoint to add a new student.
      *
      * @param studentRegisterDto DTO containing student registration data.
-     * @return HTTP response with status CREATED if successful, CONFLICT if the student already exists,
+     * @return HTTP response with status CREATED if successful, CONFLICT if the
+     *         student already exists,
      *         or INTERNAL_SERVER_ERROR if an unexpected error occurs.
      */
     @POST
@@ -60,12 +61,12 @@ public class StudentResource {
         }
     }
 
-    
     /**
      * Endpoint to retrieve a student's details by email.
      *
      * @param email Email of the student to be retrieved.
-     * @return HTTP response with student data if found, NOT_FOUND if the student does not exist,
+     * @return HTTP response with student data if found, NOT_FOUND if the student
+     *         does not exist,
      *         or INTERNAL_SERVER_ERROR if an unexpected error occurs.
      */
     @GET
@@ -83,20 +84,22 @@ public class StudentResource {
     /**
      * Endpoint to update a student's details.
      *
-     * @param id ID of the student to be updated.
+     * @param id               ID of the student to be updated.
      * @param studentUpdateDto DTO containing updated student information.
-     * @return HTTP response with status CREATED if updated successfully, FORBIDDEN if password is incorrect,
-     *         NOT_FOUND if the student does not exist, or INTERNAL_SERVER_ERROR if an unexpected error occurs.
+     * @return HTTP response with status CREATED if updated successfully, FORBIDDEN
+     *         if password is incorrect,
+     *         NOT_FOUND if the student does not exist, or INTERNAL_SERVER_ERROR if
+     *         an unexpected error occurs.
      */
     @PUT
-    public Response updateStudent(@QueryParam("id") int id, StudentUpdateDto studentUpdateDto) {
+    public Response updateStudent(@Valid StudentUpdateDto studentUpdateDto) {
         try {
-            String student = studentService.updadateStudent(id, studentUpdateDto);
-            return Response.status(Response.Status.CREATED).entity(student).build();
-        } catch (PasswordIncorrectException e) {
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+            String student = studentService.updateStudent(studentUpdateDto);
+            return Response.ok(student).build();
         } catch (StudentNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (PasswordIncorrectException e) {
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -105,10 +108,12 @@ public class StudentResource {
     /**
      * Endpoint to delete a student by email.
      *
-     * @param email Email of the student to be deleted.
+     * @param email      Email of the student to be deleted.
      * @param studentDto DTO containing student authentication data.
-     * @return HTTP response with status OK if deleted successfully, FORBIDDEN if password is incorrect,
-     *         NOT_FOUND if the student does not exist, or INTERNAL_SERVER_ERROR if an unexpected error occurs.
+     * @return HTTP response with status OK if deleted successfully, FORBIDDEN if
+     *         password is incorrect,
+     *         NOT_FOUND if the student does not exist, or INTERNAL_SERVER_ERROR if
+     *         an unexpected error occurs.
      */
     @DELETE
     public Response deleteStudent(@QueryParam("email") String email, StudentDto studentDto) {
@@ -123,9 +128,6 @@ public class StudentResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-
-
-
 
     @GET
     @Path("/all")
