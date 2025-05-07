@@ -17,10 +17,10 @@ public class StudentProgramRepository implements PanacheRepository<StudentProgra
     public List<Object[]> countResolvedProgramsByStudent() {
         return getEntityManager()
                 .createQuery("""
-                            SELECT sp.student.id, sp.student.name, COUNT(sp)
+                            SELECT sp.student.id, sp.student.name, COUNT(sp), sp.resolvedBy.id
                             FROM StudentProgram sp
                             WHERE sp.resolved = true
-                            GROUP BY sp.student.id, sp.student.name
+                            GROUP BY sp.student.id, sp.student.name, sp.resolvedBy.id
                         """, Object[].class)
                 .getResultList();
     }

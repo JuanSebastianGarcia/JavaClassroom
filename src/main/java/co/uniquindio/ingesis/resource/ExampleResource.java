@@ -9,8 +9,15 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.annotation.security.PermitAll;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Path("/example")
 @Produces(MediaType.APPLICATION_JSON)
@@ -170,6 +177,61 @@ public class ExampleResource {
     @Path("/{id}/students")
     public List<String> getStudentsByExample(@PathParam("id") Integer exampleId) {
         return exampleService.getStudentsAssignedToExample(exampleId);
+    }
+
+    private static final String EXAMPLES_BASE_DIR = "/deployments/ejemplos";
+
+    @GET
+    @Path("/ejemplo/{exampleId}/download")
+    @Produces("application/zip")
+    public Response downloadExampleAsZip(@PathParam("exampleId") String exampleId) {
+        File exampleFolder = new File(EXAMPLES_BASE_DIR, exampleId);
+
+        if (!exampleFolder.exists() || !exampleFolder.isDirectory()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No se encontró la carpeta del ejemplo").build();
+        }
+
+        try {
+            File zipFile = File.createTempFile("example-" + exampleId + "-", ".zip");
+
+            try (FileOutputStream fos = new FileOutputStream(zipFile);
+                    ZipOutputStream zos = new ZipOutputStream(fos)) {
+
+                zipFolderRecursive(exampleFolder, exampleFolder, zos); // Recursivo
+            }
+
+            return Response.ok(zipFile)
+                    .header("Content-Disposition", "attachment; filename=\"ejemplo-" + exampleId + ".zip\"")
+                    .build();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error al crear el archivo zip del ejemplo").build();
+        }
+    }
+
+    // 🔁 Método auxiliar para comprimir con subdirectorios
+    private void zipFolderRecursive(File baseFolder, File currentFile, ZipOutputStream zos) throws IOException {
+        for (File file : currentFile.listFiles()) {
+            if (file.isDirectory()) {
+                zipFolderRecursive(baseFolder, file, zos);
+            } else {
+                String relativePath = baseFolder.toURI().relativize(file.toURI()).getPath(); // Estructura de carpetas
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(relativePath);
+                    zos.putNextEntry(zipEntry);
+
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = fis.read(buffer)) > 0) {
+                        zos.write(buffer, 0, len);
+                    }
+                    zos.closeEntry();
+                }
+            }
+        }
     }
 
 }

@@ -69,6 +69,8 @@ public class JwtFilter implements ContainerRequestFilter {
             requestContext.setProperty("userEmail", claims.getSubject());
             requestContext.setProperty("userRole", claims.get("role", String.class));
             requestContext.setProperty("userCedula", claims.get("cedula", String.class));
+            Integer userId = claims.get("id", Integer.class); // ✅ Correcto
+            requestContext.setProperty("userId", userId);
 
         } catch (ExpiredJwtException e) {
             System.out.println("Token expired: " + e.getMessage());

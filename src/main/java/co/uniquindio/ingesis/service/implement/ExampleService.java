@@ -140,7 +140,7 @@ public class ExampleService implements ExampleServiceInterface {
         exampleRepository.delete(example);
 
         // Ruta a la carpeta del ejemplo
-        String examplePath = "C:\\Users\\brahi\\Documents\\ProyectoApi\\ejemplos\\" + example.getId();
+        String examplePath = "ejemplos/" + example.getId();
         Path exampleDirectory = Paths.get(examplePath);
 
         try {
@@ -187,6 +187,7 @@ public class ExampleService implements ExampleServiceInterface {
         });
     }
 
+    @Transactional
     @Override
     public List<ExampleDto> listExamples() {
         return exampleRepository.listAll()

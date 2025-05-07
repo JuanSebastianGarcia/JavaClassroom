@@ -21,6 +21,10 @@ public class StudentRepository implements PanacheRepository<Student> {
         return find("document", document).firstResultOptional();
     }
 
+    public Optional<Student> findById(int id) {
+        return find("id", id).firstResultOptional(); // Envuelve el resultado en un Optional
+    }
+
     /**
      * Searches for a student by their email address.
      *
@@ -30,4 +34,5 @@ public class StudentRepository implements PanacheRepository<Student> {
     public Optional<Student> findByEmail(String email) {
         return find("email", email).firstResultOptional();
     }
+
 }

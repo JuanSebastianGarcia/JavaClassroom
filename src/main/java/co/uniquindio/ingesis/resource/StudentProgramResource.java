@@ -48,16 +48,15 @@ public class StudentProgramResource {
      * @return Response with confirmation message
      */
     @POST
-    @Path("/mark-resolved/{studentId}/{programId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/mark-resolved/{studentId}/{programId}/{teacherId}")
     public Response markProgramResolved(
             @PathParam("studentId") Long studentId,
             @PathParam("programId") Long programId,
+            @PathParam("teacherId") Long teacherId,
             Map<String, Boolean> requestBody) {
 
         Boolean resolved = requestBody.get("resolved");
-        studentProgramService.markProgramResolved(studentId, programId, resolved);
+        studentProgramService.markProgramResolved(studentId, programId, resolved, teacherId);
         return Response.ok("Program marked as " + (resolved ? "resolved." : "not resolved.")).build();
     }
 
@@ -148,6 +147,12 @@ public class StudentProgramResource {
             e.printStackTrace();
             return Response.serverError().entity("Error generating PDF report").build();
         }
+    }
+
+    @GET
+    @Path("/programs")
+    public Response getAllPrograms() {
+        return Response.ok(studentProgramService.getAllPrograms()).build();
     }
 
 }

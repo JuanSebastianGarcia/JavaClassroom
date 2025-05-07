@@ -11,10 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Table(name = "student")
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Student {
 
     /*
@@ -36,30 +37,27 @@ public class Student {
     @Column(name = "name", nullable = false)
     private String name;
 
-
     /*
      * student's email
      */
     @Column(name = "email", unique = true)
     private String email;
 
-
     /*
      * student's password
      */
     @Column(name = "password", nullable = false)
     private String password;
-    
+
     /*
      * 
      */
-    @Column(name="status")
+    @Column(name = "status")
     private StatusAcountEnum status;
 
-
     /*
      * 
      */
-    @Column(name="token_verification")
+    @Column(name = "token_verification")
     private String token;
 }

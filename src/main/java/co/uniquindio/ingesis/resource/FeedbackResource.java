@@ -2,7 +2,9 @@ package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.FeedbackResource.FeedbackDto;
 import co.uniquindio.ingesis.dto.FeedbackResource.FeedbackResponseDto;
+import co.uniquindio.ingesis.dto.programResource.ProgramDto;
 import co.uniquindio.ingesis.service.interfaces.FeedbackServiceInterface;
+import co.uniquindio.ingesis.service.interfaces.ProgramServiceInterface;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -28,6 +30,9 @@ public class FeedbackResource {
     @Inject
     FeedbackServiceInterface feedbackService;
 
+    @Inject
+    ProgramServiceInterface programService;
+
     /**
      * Endpoint to add new feedback for a specific program by a teacher.
      *
@@ -40,17 +45,16 @@ public class FeedbackResource {
     @Path("/programa/{programId}/profesor/{teacherId}")
     @Transactional
     public Response agregarFeedback(@PathParam("programId") Long programId,
-                                    @PathParam("teacherId") Integer teacherId,
-                                    @Valid FeedbackDto dto) {
-    
+            @PathParam("teacherId") Integer teacherId,
+            @Valid FeedbackDto dto) {
+
         // Create a new DTO with IDs from the URL
         FeedbackDto nuevoDto = new FeedbackDto(
                 null,
                 dto.comment(),
                 programId,
-                teacherId
-        );
-    
+                teacherId);
+
         FeedbackResponseDto feedback = feedbackService.agregarFeedback(nuevoDto);
         return Response.status(Response.Status.CREATED).entity(feedback).build();
     }
@@ -67,7 +71,7 @@ public class FeedbackResource {
         List<FeedbackResponseDto> feedbacks = feedbackService.obtenerFeedbackPorPrograma(programId);
         return Response.ok(feedbacks).build();
     }
-    
+
     /**
      * Endpoint to update existing feedback for a program.
      *
@@ -81,22 +85,19 @@ public class FeedbackResource {
     @Path("/{feedbackId}/programa/{programId}/profesor/{teacherId}")
     @Transactional
     public Response actualizarFeedback(@PathParam("feedbackId") Long feedbackId,
-                                       @PathParam("programId") Long programId,
-                                       @PathParam("teacherId") Integer teacherId,
-                                       @Valid FeedbackDto dto) {
+            @PathParam("programId") Long programId,
+            @PathParam("teacherId") Integer teacherId,
+            @Valid FeedbackDto dto) {
         FeedbackDto nuevoDto = new FeedbackDto(
                 null,
                 dto.comment(),
                 programId,
-                teacherId
-        );
-    
+                teacherId);
+
         FeedbackResponseDto response = feedbackService.actualizarFeedback(feedbackId, nuevoDto);
         return Response.ok(response).build();
     }
-    
 
-    
     /**
      * Endpoint to delete existing feedback.
      *
@@ -110,4 +111,12 @@ public class FeedbackResource {
         feedbackService.eliminarFeedback(feedbackId);
         return Response.ok("Comentario eliminado exitosamente").build();
     }
+
+    @GET
+    @Path("/programas")
+    public Response obtenerTodosLosProgramas() {
+        List<ProgramDto> programas = programService.listPrograms();
+        return Response.ok(programas).build();
+    }
+
 }

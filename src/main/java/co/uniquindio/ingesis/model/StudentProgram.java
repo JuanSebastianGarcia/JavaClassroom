@@ -1,12 +1,13 @@
 package co.uniquindio.ingesis.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "student_program")
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudentProgram {
 
     @Id
@@ -19,6 +20,11 @@ public class StudentProgram {
     @ManyToOne(optional = false)
     private Program program;
 
+    @ManyToOne
+    @JoinColumn(name = "resolvedBy_id_profesor", nullable = true)
+    private Teacher resolvedBy;
+
     @Column(name = "resolved", nullable = false)
     private boolean resolved;
+
 }

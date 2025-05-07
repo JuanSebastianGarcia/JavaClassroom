@@ -10,15 +10,15 @@ public interface VerificationServiceInterface {
      */
     String sendVerificationEmail(String email, String token);
 
-
+    void sendCommentNotification(String email, String programName); // <--- agregar esto
 
     /**
      * Verifies the user's account.
      * 
-     * @param email The email of the user to verify.
+     * @param email            The email of the user to verify.
      * @param verificationCode The verification code sent to the user.
      * @return A message indicating the result of the verification.
      */
     void verifyAccount(String email, String verificationCode);
-    
+
 }

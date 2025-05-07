@@ -56,6 +56,26 @@ public class VerificationService implements VerificationServiceInterface {
     }
 
     @Override
+    public void sendCommentNotification(String email, String programName) {
+
+        MensajeDTO mensaje = new MensajeDTO(
+                "EMAIL",
+                email,
+                "Se ha añadido un nuevo comentario a tu programa: " + programName,
+                "Nuevo comentario en tu programa");
+
+        try {
+            String json = objectMapper.writeValueAsString(mensaje);
+            System.out.println("Enviando notificación de comentario: " + json);
+            mensajeEmitter.send(json);
+            System.out.println("Notificación enviada " + json);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     @Transactional
     public void verifyAccount(String email, String verificationCode) {
         Optional<Student> student = studentRepository.findByEmail(email);

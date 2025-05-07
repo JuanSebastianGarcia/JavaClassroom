@@ -103,7 +103,7 @@ public class AuthService implements AuthServiceInterface {
         validatePassword(loginDto.password(), foundStudent.getPassword());
 
         System.out.println("Generating token with cedula: " + foundStudent.getDocument());
-        return generateToken(foundStudent.getEmail(), "student", foundStudent.getDocument());
+        return generateToken(foundStudent.getEmail(), "student", foundStudent.getDocument(), foundStudent.getId());
 
     }
 
@@ -128,7 +128,7 @@ public class AuthService implements AuthServiceInterface {
 
         validatePassword(loginDto.password(), foundTeacher.getPassword());
         System.out.println("Generating token with cedula: " + foundTeacher.getCedula());
-        return generateToken(foundTeacher.getEmail(), "teacher", foundTeacher.getCedula());
+        return generateToken(foundTeacher.getEmail(), "teacher", foundTeacher.getCedula(), foundTeacher.getId());
     }
 
     /**
@@ -138,12 +138,13 @@ public class AuthService implements AuthServiceInterface {
      * @param role  The user's role.
      * @return A signed JWT token.
      */
-    public String generateToken(String email, String role, String cedula) {
+    public String generateToken(String email, String role, String cedula, Integer id) {
 
         System.out.println("Generando token con:");
         System.out.println("Email: " + email);
         System.out.println("Role: " + role);
         System.out.println("Cédula: " + cedula);
+        System.out.println("Id: " + id);
 
         return Jwts.builder()
                 .setSubject(email)
@@ -153,6 +154,7 @@ public class AuthService implements AuthServiceInterface {
                 .signWith(getSigningKey())
                 .claim("role", role)
                 .claim("cedula", cedula)
+                .claim("id", id)
                 .compact();
 
     }
