@@ -23,6 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Project reporting output encoding -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <file.encoding>UTF-8</file.encoding>
         <!-- Quarkus platform artifact ID -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <!-- Quarkus platform group ID -->
@@ -33,6 +34,11 @@
         <skipITs>true</skipITs>
         <!-- Surefire plugin version -->
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
+        <junit-platform.version>1.9.3</junit-platform.version>
+        <rest-assured.version>5.3.1</rest-assured.version>
+        <!-- Configuración específica para Cucumber -->
+        <cucumber.execution.encoding>UTF-8</cucumber.execution.encoding>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
     </properties>
 
     <!-- Dependency management -->
@@ -93,6 +99,13 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Quarkus JDBC PostgreSQL dependency -->
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -205,7 +218,7 @@
 
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
+            <artifactId>quarkus-messaging-kafka</artifactId>
             <version>3.15.4</version>
         </dependency>
 
@@ -221,7 +234,45 @@
             <version>1.3.30</version> <!-- Última versión estable -->
         </dependency>
 
+        <!-- Cucumber -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.22.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.22.1</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- JUnit Platform -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit-platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
 
+    <!-- WireMock para simular la API -->
+    <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock-jre8</artifactId>
+        <version>2.35.0</version>
+        <scope>test</scope>
+    </dependency>
+
+
+
+        
 
 
 
@@ -270,6 +321,13 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
+                            <includes>
+                                <include>**/*Test.java</include>
+                                <include>**/*Tests.java</include>
+                                <include>**/Test*.java</include>
+                                <include>**/*CucumberTest.java</include>
+                                <include>**/CucumberTestSuite.java</include>
+                            </includes>
                 </configuration>
             </plugin>
             <!-- Maven Failsafe plugin -->

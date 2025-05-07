@@ -131,11 +131,17 @@ public class StudentResource {
 
     @GET
     @Path("/all")
-    public Response getAllStudents(GetAllDto getAllDto) {
+    public Response getAllStudents(@QueryParam("page") int page) {
         try {
-            return Response.status(Response.Status.OK).entity(studentService.getAllStudents(getAllDto)).build();
+            GetAllDto getAllDto = new GetAllDto(page);
+            return Response.status(Response.Status.OK)
+                    .entity(studentService.getAllStudents(getAllDto))
+                    .build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
+
 }

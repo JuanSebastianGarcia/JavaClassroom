@@ -12,6 +12,7 @@ import co.uniquindio.ingesis.dto.login.LoginDto;
 import co.uniquindio.ingesis.dto.login.TokenResponseDto;
 import co.uniquindio.ingesis.exception.AccountNotVerifiedException;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
+import co.uniquindio.ingesis.exception.RoleMismatchException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.exception.TeacherNotExistException;
@@ -93,10 +94,14 @@ public class AuthService implements AuthServiceInterface {
             throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Student> student = studentRepository.findByEmail(loginDto.email());
 
-        // Use orElseThrow to simplify optional handling
         Student foundStudent = student.orElseThrow(StudentNotExistException::new);
 
-        if (student.get().getStatus().equals(StatusAcountEnum.PENDING)) {
+        // Validar que el rol realmente sea student
+        if (!"student".equalsIgnoreCase(loginDto.role())) {
+            throw new RoleMismatchException();
+        }
+
+        if (foundStudent.getStatus().equals(StatusAcountEnum.PENDING)) {
             throw new AccountNotVerifiedException();
         }
 
@@ -104,7 +109,6 @@ public class AuthService implements AuthServiceInterface {
 
         System.out.println("Generating token with cedula: " + foundStudent.getDocument());
         return generateToken(foundStudent.getEmail(), "student", foundStudent.getDocument(), foundStudent.getId());
-
     }
 
     /**
@@ -119,14 +123,19 @@ public class AuthService implements AuthServiceInterface {
             throws PasswordIncorrectException, AccountNotVerifiedException {
         Optional<Teacher> teacher = teacherRepository.findByEmail(loginDto.email());
 
-        // Use orElseThrow to simplify optional handling
         Teacher foundTeacher = teacher.orElseThrow(TeacherNotExistException::new);
 
-        if (teacher.get().getStatus().equals(StatusAcountEnum.PENDING)) {
+        // Validar que el rol realmente sea teacher
+        if (!"teacher".equalsIgnoreCase(loginDto.role())) {
+            throw new RoleMismatchException();
+        }
+
+        if (foundTeacher.getStatus().equals(StatusAcountEnum.PENDING)) {
             throw new AccountNotVerifiedException();
         }
 
         validatePassword(loginDto.password(), foundTeacher.getPassword());
+
         System.out.println("Generating token with cedula: " + foundTeacher.getCedula());
         return generateToken(foundTeacher.getEmail(), "teacher", foundTeacher.getCedula(), foundTeacher.getId());
     }

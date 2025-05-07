@@ -14,6 +14,7 @@ import co.uniquindio.ingesis.dto.login.TokenResponseDto;
 import co.uniquindio.ingesis.dto.responses.ErrorResponse;
 import co.uniquindio.ingesis.exception.AccountNotVerifiedException;
 import co.uniquindio.ingesis.exception.PasswordIncorrectException;
+import co.uniquindio.ingesis.exception.RoleMismatchException;
 import co.uniquindio.ingesis.exception.RoleUnknownException;
 import co.uniquindio.ingesis.exception.StudentNotExistException;
 import co.uniquindio.ingesis.exception.TeacherNotExistException;
@@ -26,7 +27,7 @@ import co.uniquindio.ingesis.service.implement.AuthService;
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@PermitAll // Permite acceso sin autenticación
+@PermitAll
 public class AuthResource {
 
     @Inject
@@ -47,11 +48,11 @@ public class AuthResource {
             return buildErrorResponse(Response.Status.NOT_FOUND, e.getMessage());
         } catch (PasswordIncorrectException e) {
             return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
-        } catch (RoleUnknownException e) {
-            return buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
         } catch (AccountNotVerifiedException e) {
             return buildErrorResponse(Response.Status.UNAUTHORIZED, e.getMessage());
-        } catch (Exception e) { // Catch-all for unexpected errors
+        } catch (RoleUnknownException | RoleMismatchException e) {
+            return buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
             return buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         }
     }
