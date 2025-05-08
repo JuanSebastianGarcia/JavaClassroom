@@ -64,17 +64,29 @@ public class AuthService implements AuthServiceInterface {
      */
     @Override
     public TokenResponseDto loginUser(LoginDto loginDto)
-            throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException {
+            throws RoleUnknownException, PasswordIncorrectException,
+            AccountNotVerifiedException, RoleMismatchException {
+
         String role = loginDto.role();
         String token;
 
-        switch (role) {
+        switch (role.toLowerCase()) {
             case "student":
+                // Validar si el correo corresponde a un teacher
+                if (teacherRepository.findByEmail(loginDto.email()).isPresent()) {
+                    throw new RoleMismatchException();
+                }
                 token = generateTokenForStudent(loginDto);
                 break;
+
             case "teacher":
+                // Validar si el correo corresponde a un student
+                if (studentRepository.findByEmail(loginDto.email()).isPresent()) {
+                    throw new RoleMismatchException();
+                }
                 token = generateTokenForTeacher(loginDto);
                 break;
+
             default:
                 throw new RoleUnknownException();
         }

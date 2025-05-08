@@ -17,3 +17,11 @@ Feature: Inicio de sesión de usuario
     When envío una solicitud de inicio de sesión al servicio de autenticación
     Then debería recibir un código de estado 404
     And no debería recibir un token de autenticación 
+
+
+  Scenario: Fallo de inicio de sesión por rol incorrecto
+    Given soy un estudiante registrado con credenciales válidas pero rol incorrecto
+    When envío una solicitud de inicio de sesión al servicio de autenticación
+    Then debería recibir un código de estado 400
+    And no debería recibir un token de autenticación
+

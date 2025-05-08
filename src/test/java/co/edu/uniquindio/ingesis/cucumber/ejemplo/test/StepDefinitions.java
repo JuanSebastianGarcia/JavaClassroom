@@ -44,6 +44,17 @@ public class StepDefinitions {
                 """;
     }
 
+    @Given("soy un estudiante registrado con credenciales válidas pero rol incorrecto")
+    public void soy_estudiante_con_rol_incorrecto() {
+        requestBody = """
+                {
+                  "email": "brahianjajasalu2@gmail.com",
+                  "password": "contraseñaSegura1234",
+                  "role": "teacher"
+                }
+                """;
+    }
+
     @When("envío una solicitud de inicio de sesión al servicio de autenticación")
     public void envio_solicitud_login() {
         response = given()
@@ -66,6 +77,11 @@ public class StepDefinitions {
     @Then("debería recibir un código de estado 404")
     public void deberia_recibir_codigo_404() {
         response.then().statusCode(404);
+    }
+
+    @Then("debería recibir un código de estado 400")
+    public void deberia_recibir_codigo_400() {
+        response.then().statusCode(400);
     }
 
     @And("debería recibir un token de autenticación")
