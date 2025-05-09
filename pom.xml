@@ -39,6 +39,10 @@
         <!-- Configuración específica para Cucumber -->
         <cucumber.execution.encoding>UTF-8</cucumber.execution.encoding>
         <argLine>-Dfile.encoding=UTF-8</argLine>
+        <sonar.projectKey>JavaClassroom</sonar.projectKey>
+        <sonar.projectName>JavaClassroom</sonar.projectName>
+        <sonar.host.url>http://sonar:9000</sonar.host.url>
+  <!-- sonar.login no es necesario si ya lo configuraste por token en Jenkins -->
     </properties>
 
     <!-- Dependency management -->
@@ -312,6 +316,14 @@
                     <release>17</release>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version>
+            </plugin>
+
+
+
             <!-- Maven Surefire plugin -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
