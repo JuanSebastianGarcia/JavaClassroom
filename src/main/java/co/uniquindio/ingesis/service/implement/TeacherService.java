@@ -54,7 +54,7 @@ public class TeacherService implements TeacherServiceInterface {
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
         // Ejecuta en una nueva transacción
         String token = createTeacherTransactional(teacherDto);
-    
+
         // Envío fuera de la transacción principal
         try {
             verificationService.sendVerificationEmail(teacherDto.email(), token);
@@ -62,36 +62,35 @@ public class TeacherService implements TeacherServiceInterface {
         } catch (Exception e) {
             logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
         }
-    
+
         return "The teacher has been created";
     }
-    
+
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
     public String createTeacherTransactional(TeacherDto teacherDto) throws TeacherExistException {
         Teacher new_teacher = buildTeacherFromDto(teacherDto);
         logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
-    
+
         Optional<Teacher> teacher_exist = teacherRepository.findByCedula(new_teacher.getCedula());
         if (teacher_exist.isPresent()) {
             throw new TeacherExistException();
         }
-    
+
         String token = UUID.randomUUID().toString();
         new_teacher.setToken(token);
-    
+
         teacherRepository.persist(new_teacher);
         logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
-    
+
         return token;
     }
-    
-    
+
     /*
      * This method searches a teacher by document
      */
     @Override
-    @PermitAll 
-    @RolesAllowed({"teacher"}) 
+    @PermitAll
+    @RolesAllowed({ "teacher" })
     public TeacherDto getTeacher(TeacherDto teacherDto) {
         logger.info("Fetching teacher with Cedula: {}", teacherDto.cedula());
 
@@ -110,7 +109,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method deletes a teacher
      */
     @Override
-    @RolesAllowed({"teacher"}) 
+    @RolesAllowed({ "teacher" })
     @Transactional
     public String deleteTeacher(TeacherDto teacherDto) {
         logger.info("Attempting to delete teacher with Cedula: {}", teacherDto.cedula());
@@ -132,7 +131,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method updates a teacher's information
      */
     @Override
-    @RolesAllowed({"teacher"}) 
+    @RolesAllowed({ "teacher" })
     @Transactional
     public String updateTeacher(TeacherDto teacherDto) {
         logger.info("Attempting to update teacher with Cedula: {}", teacherDto.cedula());
@@ -159,7 +158,8 @@ public class TeacherService implements TeacherServiceInterface {
      */
     private Teacher buildTeacherFromDto(TeacherDto teacherDto) {
         String password_hash = hashPassword(teacherDto.password());
-        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash, StatusAcountEnum.PENDING, "");    
+        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash,
+                StatusAcountEnum.PENDING, "");
     }
 
     /*
@@ -173,6 +173,7 @@ public class TeacherService implements TeacherServiceInterface {
      * This method builds a TeacherDto from a Teacher
      */
     private TeacherDto buildDtoFromTeacher(Teacher teacher) {
-        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "", teacher.getStatus());
+        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "",
+                teacher.getStatus());
     }
 }
