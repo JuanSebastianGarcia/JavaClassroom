@@ -42,6 +42,7 @@
         <sonar.projectKey>JavaClassroom</sonar.projectKey>
         <sonar.projectName>JavaClassroom</sonar.projectName>
         <sonar.host.url>http://sonar:9000</sonar.host.url>
+        <sonar.login>${env.SONAR_TOKEN}</sonar.login> 
   <!-- sonar.login no es necesario si ya lo configuraste por token en Jenkins -->
     </properties>
 
