@@ -61,7 +61,7 @@ public class StepDefinitions {
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
-                .post("http://localhost:8081/auth");
+                .post("http://quarkus-app:8080/auth");
     }
 
     @Then("debería recibir un código de estado 200")
