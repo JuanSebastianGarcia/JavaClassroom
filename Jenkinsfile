@@ -42,4 +42,17 @@ pipeline {
     triggers {
     githubPush()
     }
+
+    post {
+        success {
+            mail to: 'juans.garciaa@uqvirtual.edu.co',
+                 subject: " Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "El build fue exitoso.\n\nRevisa en: ${env.BUILD_URL}"
+        }
+        failure {
+            mail to: 'juans.garciaa@uqvirtual.edu.co',
+                 subject: " Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "El build falló.\n\nRevisa en: ${env.BUILD_URL}"
+        }
+    }
 }
