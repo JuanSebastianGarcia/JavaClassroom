@@ -10,10 +10,27 @@ import java.util.Optional;
 @ApplicationScoped
 public class StudentProgramRepository implements PanacheRepository<StudentProgram> {
 
+    /**
+     * Finds a StudentProgram entity by student ID and program ID.
+     * 
+     * @param studentId the ID of the student
+     * @param programId the ID of the program
+     * @return Optional containing the found StudentProgram or empty if not found
+     */
     public Optional<StudentProgram> findByStudentAndProgram(Integer studentId, Integer programId) {
         return find("student.id = ?1 and program.id = ?2", studentId, programId).firstResultOptional();
     }
 
+    /**
+     * Counts the number of resolved programs grouped by student.
+     * Returns a list of Object arrays where each element contains:
+     * - Student ID
+     * - Student name
+     * - Count of resolved programs
+     * - ID of the user who marked them resolved (resolvedBy)
+     * 
+     * @return List of Object arrays with the grouped results
+     */
     public List<Object[]> countResolvedProgramsByStudent() {
         return getEntityManager()
                 .createQuery("""

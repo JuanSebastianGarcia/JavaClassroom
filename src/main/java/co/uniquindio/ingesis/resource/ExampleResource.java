@@ -1,28 +1,28 @@
 package co.uniquindio.ingesis.resource;
 
 import co.uniquindio.ingesis.dto.ExampleResource.ExampleDto;
-//import co.uniquindio.ingesis.model.Student;
 import co.uniquindio.ingesis.service.interfaces.ExampleServiceInterface;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.annotation.security.PermitAll;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * REST resource for managing code examples.
+ * Provides endpoints for uploading, retrieving, updating, deleting,
+ * assigning, and downloading programming examples.
+ */
 @Path("/example")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@PermitAll // Permite acceso sin autenticación
+@PermitAll // Public access without authentication
 public class ExampleResource {
 
     private final ExampleServiceInterface exampleService;
@@ -32,134 +32,127 @@ public class ExampleResource {
     }
 
     /**
-     * Endpoint para agregar un ejemplo, incluyendo un archivo ZIP.
+     * Creates a new example along with its ZIP file.
      *
-     * @param zipInputStream Stream del archivo ZIP con el contenido del ejemplo
-     * @param exampleDto     Datos del ejemplo (título, contenido, etc.)
-     * @return Respuesta con el resultado de la operación
+     * @param id             Example ID
+     * @param zipInputStream Input stream of the ZIP file
+     * @param title          Example title
+     * @param content        Example content/description
+     * @param category       Example category (e.g., Loops, Arrays)
+     * @param difficulty     Difficulty level of the example
+     * @param requestContext Request context to extract user identity
+     * @return Response indicating the result of the operation
      */
     @POST
     @Path("/update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response CreateExample(
-            @FormParam("id") Integer id, // Extraemos el ID del formulario
-            @FormParam("file") InputStream zipInputStream, // Extraemos el archivo ZIP
-            @FormParam("title") String title, // Extraemos el título
-            @FormParam("content") String content, // Extraemos el contenido
-            @FormParam("category") String category, // Extraemos la categoría
-            @FormParam("difficulty") Integer difficulty, // Extraemos el nivel de dificultad
+    public Response createExample(
+            @FormParam("id") Integer id,
+            @FormParam("file") InputStream zipInputStream,
+            @FormParam("title") String title,
+            @FormParam("content") String content,
+            @FormParam("category") String category,
+            @FormParam("difficulty") Integer difficulty,
             @Context ContainerRequestContext requestContext) {
         try {
-            // Obtener la cédula del usuario autenticado desde el contexto
             String cedulaProfesor = (String) requestContext.getProperty("userCedula");
-
-            // Crea un DTO con los parámetros recibidos y la cédula del profesor
             ExampleDto exampleDto = new ExampleDto(id, title, content, category, difficulty, cedulaProfesor);
-
-            // Procesa el archivo ZIP y los datos del ejemplo
             String response = exampleService.addExample(exampleDto, zipInputStream);
-
-            // Devuelve respuesta exitosa con estado 200 (OK)
-            return Response.status(Response.Status.OK).entity(response).build();
+            return Response.ok(response).build();
         } catch (Exception e) {
-            // Manejo de errores centralizado
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     /**
-     * Endpoint para obtener un ejemplo por su ID.
+     * Retrieves an example by its ID.
      *
-     * @param id ID único del ejemplo
-     * @return Respuesta con el ejemplo encontrado o error si no existe
+     * @param id Example ID
+     * @return Example DTO or 404 if not found
      */
     @GET
     @Path("/{id}")
     public Response getExample(@PathParam("id") Integer id) {
         try {
-            // Obtiene el ejemplo desde el servicio
             ExampleDto example = exampleService.getExample(new ExampleDto(id, "", "", "", 0, ""));
             return Response.ok(example).build();
         } catch (Exception e) {
-            // Si no se encuentra el ejemplo, devuelve error 404
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     /**
-     * Endpoint para actualizar un ejemplo, incluyendo su archivo ZIP.
+     * Updates an existing example and its associated ZIP file.
      *
-     * @param id             ID único del ejemplo a actualizar
-     * @param zipInputStream Stream del archivo ZIP con el contenido actualizado
-     *                       (opcional)
-     * @param exampleDto     Nuevos datos del ejemplo
-     * @return Respuesta con el resultado de la operación
+     * @param id             Example ID
+     * @param zipInputStream Updated ZIP file input stream
+     * @param title          New title
+     * @param content        New content/description
+     * @param category       New category
+     * @param difficulty     New difficulty level
+     * @param requestContext Request context to extract user identity
+     * @return Response with update result
      */
     @PUT
     @Path("/update/{id}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response updateExample(
-            @PathParam("id") Integer id, // Extraemos el ID de la URL
-            @FormParam("file") InputStream zipInputStream, // Extraemos el archivo ZIP
-            @FormParam("title") String title, // Extraemos el título
-            @FormParam("content") String content, // Extraemos el contenido
-            @FormParam("category") String category, // Extraemos la categoría
-            @FormParam("difficulty") Integer difficulty, // Extraemos el nivel de dificultad
+            @PathParam("id") Integer id,
+            @FormParam("file") InputStream zipInputStream,
+            @FormParam("title") String title,
+            @FormParam("content") String content,
+            @FormParam("category") String category,
+            @FormParam("difficulty") Integer difficulty,
             @Context ContainerRequestContext requestContext) {
         try {
-            // Obtener la cédula del usuario autenticado desde el contexto
             String cedulaProfesor = (String) requestContext.getProperty("userCedula");
-
-            // Crea un DTO con los parámetros recibidos y la cédula del profesor
             ExampleDto exampleDto = new ExampleDto(id, title, content, category, difficulty, cedulaProfesor);
-
-            // Actualiza el ejemplo y su archivo asociado
             String response = exampleService.updateExample(exampleDto, zipInputStream);
-
-            // Devuelve respuesta exitosa
             return Response.ok(response).build();
         } catch (Exception e) {
-            // Manejo de errores centralizado
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     /**
-     * Endpoint para eliminar un ejemplo por su ID.
+     * Deletes an example by ID.
      *
-     * @param id ID único del ejemplo a eliminar
-     * @return Respuesta con el resultado de la operación
+     * @param id Example ID
+     * @return Response with deletion result
      */
     @DELETE
     @Path("/{id}")
     public Response deleteExample(@PathParam("id") Integer id) {
         try {
-            // Elimina el ejemplo
             String response = exampleService.deleteExample(id);
             return Response.ok(response).build();
         } catch (Exception e) {
-            // Manejo de errores centralizado
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     /**
-     * Endpoint para listar todos los ejemplos.
+     * Retrieves a list of all examples.
      *
-     * @return Respuesta con la lista de ejemplos
+     * @return List of examples
      */
     @GET
     @Path("/list")
     public Response listExamples() {
         try {
-            // Devuelve la lista de ejemplos
             return Response.ok(exampleService.listExamples()).build();
         } catch (Exception e) {
-            // Manejo de errores centralizado
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
+    /**
+     * Assigns an example to multiple students.
+     *
+     * @param exampleId          Example ID
+     * @param cedulasEstudiantes List of student IDs
+     * @return Response with assignment result
+     */
     @POST
     @Path("/{id}/assign")
     public Response assignExample(
@@ -173,6 +166,12 @@ public class ExampleResource {
         }
     }
 
+    /**
+     * Retrieves the list of students assigned to a given example.
+     *
+     * @param exampleId Example ID
+     * @return List of student IDs
+     */
     @GET
     @Path("/{id}/students")
     public List<String> getStudentsByExample(@PathParam("id") Integer exampleId) {
@@ -181,6 +180,12 @@ public class ExampleResource {
 
     private static final String EXAMPLES_BASE_DIR = "/deployments/ejemplos";
 
+    /**
+     * Downloads an example's files as a ZIP archive.
+     *
+     * @param exampleId Example ID
+     * @return ZIP file containing the example's content
+     */
     @GET
     @Path("/ejemplo/{exampleId}/download")
     @Produces("application/zip")
@@ -189,7 +194,7 @@ public class ExampleResource {
 
         if (!exampleFolder.exists() || !exampleFolder.isDirectory()) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("No se encontró la carpeta del ejemplo").build();
+                    .entity("Example folder not found").build();
         }
 
         try {
@@ -197,28 +202,35 @@ public class ExampleResource {
 
             try (FileOutputStream fos = new FileOutputStream(zipFile);
                     ZipOutputStream zos = new ZipOutputStream(fos)) {
-
-                zipFolderRecursive(exampleFolder, exampleFolder, zos); // Recursivo
+                zipFolderRecursive(exampleFolder, exampleFolder, zos);
             }
 
             return Response.ok(zipFile)
-                    .header("Content-Disposition", "attachment; filename=\"ejemplo-" + exampleId + ".zip\"")
+                    .header("Content-Disposition", "attachment; filename=\"example-" + exampleId + ".zip\"")
                     .build();
 
         } catch (IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error al crear el archivo zip del ejemplo").build();
+                    .entity("Error creating ZIP file for the example").build();
         }
     }
 
-    // 🔁 Método auxiliar para comprimir con subdirectorios
+    /**
+     * Recursively compresses a folder and its subdirectories into a ZIP output
+     * stream.
+     *
+     * @param baseFolder  Base folder to calculate relative paths
+     * @param currentFile Current file or folder being processed
+     * @param zos         Output stream to write ZIP entries
+     * @throws IOException if an I/O error occurs
+     */
     private void zipFolderRecursive(File baseFolder, File currentFile, ZipOutputStream zos) throws IOException {
         for (File file : currentFile.listFiles()) {
             if (file.isDirectory()) {
                 zipFolderRecursive(baseFolder, file, zos);
             } else {
-                String relativePath = baseFolder.toURI().relativize(file.toURI()).getPath(); // Estructura de carpetas
+                String relativePath = baseFolder.toURI().relativize(file.toURI()).getPath();
                 try (FileInputStream fis = new FileInputStream(file)) {
                     ZipEntry zipEntry = new ZipEntry(relativePath);
                     zos.putNextEntry(zipEntry);
@@ -233,5 +245,4 @@ public class ExampleResource {
             }
         }
     }
-
 }

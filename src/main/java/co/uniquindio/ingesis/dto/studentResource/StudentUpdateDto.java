@@ -2,30 +2,24 @@ package co.uniquindio.ingesis.dto.studentResource;
 
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Data Transfer Object (DTO) for updating student information,
+ * including name, email, and password change.
+ *
+ * @param nombre       the student's full name
+ * @param email        the student's email address
+ * @param password     the student's current password (required)
+ * @param new_password the student's new password (optional)
+ */
 public record StudentUpdateDto(
 
+        String nombre,
 
-    /*
-     * student's name
-     */
-    String nombre,
+        String email,
 
-    /*
-     * student's email
-     */
-    String email,
+        @NotBlank String password,
 
-    /*
-     * students's current password
-     */
-    @NotBlank
-    String password,
-
-    /*
-     * students's new password
-     */
-    String new_password
+        String new_password
 
 ) {
-
 }

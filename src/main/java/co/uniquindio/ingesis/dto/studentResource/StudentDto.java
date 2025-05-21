@@ -1,58 +1,32 @@
 package co.uniquindio.ingesis.dto.studentResource;
 
-
 import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-/*
- * DTO used to register a new student, search a student, delete a student and update a student
+/**
+ * Data Transfer Object (DTO) used for operations related to Student entity,
+ * including registration, retrieval, deletion, and updates.
+ *
+ * @param id       the unique identifier of the student
+ * @param cedula   the student's national ID number (max 10 digits)
+ * @param name     the full name of the student
+ * @param email    the email address of the student
+ * @param password the student's password (minimum length of 12 characters)
+ * @param status   the current account status of the student
  */
 public record StudentDto(
-        
-        
-        /*
-         * student id
-         */
-        int id,
 
-        /*
-         * student cedula
-         */
-        @NotBlank
-        @Size(max = 10,message = "the max size is 10 numbers")
-        @Positive
-        String cedula,
+                @Positive int id,
 
+                @NotBlank @Size(max = 10, message = "Maximum length is 10 characters") String cedula,
 
-        /*
-         * student name
-         */
-        @NotBlank
-        String name,
+                @NotBlank String name,
 
+                @NotBlank String email,
 
-        /*
-         * student email
-         */
-        @NotBlank
-        String email,
+                @NotBlank @Size(min = 12, message = "Password must be at least 12 characters long") String password,
 
-
-        /*
-         * student password
-         */
-        @NotBlank
-        @Size(min = 12,message = "the password is very small")
-        String password,
-
-        
-        /*
-         * student status
-         */
-        StatusAcountEnum status
-        ) {
-
-
+                StatusAcountEnum status) {
 }

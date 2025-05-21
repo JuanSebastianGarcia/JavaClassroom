@@ -1,8 +1,14 @@
 package co.uniquindio.ingesis.exception;
 
-public class RoleUnknownException extends Exception  {
+/**
+ * Custom exception thrown when an unknown role is encountered.
+ */
+public class RoleUnknownException extends Exception {
 
-    public RoleUnknownException(){
-        super("the role was unkown");
+    /**
+     * Constructs a new RoleUnknownException with a default error message.
+     */
+    public RoleUnknownException() {
+        super("The role was unknown");
     }
 }

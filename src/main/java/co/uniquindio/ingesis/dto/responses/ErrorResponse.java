@@ -1,3 +1,9 @@
 package co.uniquindio.ingesis.dto.responses;
 
-public record ErrorResponse(String error) {}
+/**
+ * Data Transfer Object (DTO) representing a standardized error response.
+ *
+ * @param error the error message describing the failure or issue
+ */
+public record ErrorResponse(String error) {
+}

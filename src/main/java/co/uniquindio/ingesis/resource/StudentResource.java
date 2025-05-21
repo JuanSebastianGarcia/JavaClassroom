@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.Response;
 
 /**
  * REST API resource for managing student operations.
+ * Provides endpoints to create, retrieve, update, and delete student records.
  */
 @Path("/student")
 @Produces(MediaType.APPLICATION_JSON)
@@ -84,9 +85,8 @@ public class StudentResource {
     /**
      * Endpoint to update a student's details.
      *
-     * @param id               ID of the student to be updated.
      * @param studentUpdateDto DTO containing updated student information.
-     * @return HTTP response with status CREATED if updated successfully, FORBIDDEN
+     * @return HTTP response with status OK if updated successfully, FORBIDDEN
      *         if password is incorrect,
      *         NOT_FOUND if the student does not exist, or INTERNAL_SERVER_ERROR if
      *         an unexpected error occurs.
@@ -129,6 +129,13 @@ public class StudentResource {
         }
     }
 
+    /**
+     * Endpoint to retrieve all students in a paginated format.
+     *
+     * @param page Page number to retrieve.
+     * @return HTTP response with the list of students for the given page,
+     *         or INTERNAL_SERVER_ERROR if an unexpected error occurs.
+     */
     @GET
     @Path("/all")
     public Response getAllStudents(@QueryParam("page") int page) {
@@ -143,5 +150,4 @@ public class StudentResource {
                     .build();
         }
     }
-
 }

@@ -20,73 +20,90 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-/*
- * This service is responsible for managing teachers
+/**
+ * Service class responsible for managing teacher-related operations including
+ * creation, retrieval, updating, and deletion of teacher entities.
  */
 @ApplicationScoped
 public class TeacherService implements TeacherServiceInterface {
 
-    /*
-     * Logger for this class
-     */
     private static final Logger logger = LogManager.getLogger(TeacherService.class);
 
-    /*
-     * Teacher repository for database operations
-     */
     private TeacherRepository teacherRepository;
 
     @Inject
     private VerificationService verificationService;
 
-    /*
-     * Constructor with dependency injection
+    /**
+     * Constructor for dependency injection of the teacher repository.
+     * 
+     * @param teacherRepository the repository handling teacher persistence
+     *                          operations
      */
     public TeacherService(TeacherRepository teacherRepository) {
         this.teacherRepository = teacherRepository;
     }
 
-    /*
-     * This method adds a new teacher and validates it
+    /**
+     * Adds a new teacher to the system, generating a verification token and
+     * sending a verification email.
+     * 
+     * @param teacherDto the data transfer object containing teacher details
+     * @return a confirmation message upon successful creation
+     * @throws TeacherExistException if a teacher with the given document already
+     *                               exists
      */
     @Override
     @PermitAll
     public String addTeacher(TeacherDto teacherDto) throws TeacherExistException {
-        // Ejecuta en una nueva transacción
         String token = createTeacherTransactional(teacherDto);
 
-        // Envío fuera de la transacción principal
         try {
             verificationService.sendVerificationEmail(teacherDto.email(), token);
-            logger.info("Correo de verificación enviado a {}", teacherDto.email());
+            logger.info("Verification email sent to {}", teacherDto.email());
         } catch (Exception e) {
-            logger.error("Error al enviar correo de verificación: {}", e.getMessage(), e);
+            logger.error("Failed to send verification email: {}", e.getMessage(), e);
         }
 
         return "The teacher has been created";
     }
 
+    /**
+     * Creates a teacher within a new transactional context. This method performs
+     * validation to prevent duplicate teachers.
+     * 
+     * @param teacherDto the data transfer object containing teacher details
+     * @return the verification token generated for the new teacher
+     * @throws TeacherExistException if a teacher with the given document already
+     *                               exists
+     */
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
     public String createTeacherTransactional(TeacherDto teacherDto) throws TeacherExistException {
-        Teacher new_teacher = buildTeacherFromDto(teacherDto);
-        logger.info("Attempting to create teacher with Cedula: {}", new_teacher.getCedula());
+        Teacher newTeacher = buildTeacherFromDto(teacherDto);
+        logger.info("Attempting to create teacher with Cedula: {}", newTeacher.getCedula());
 
-        Optional<Teacher> teacher_exist = teacherRepository.findByCedula(new_teacher.getCedula());
-        if (teacher_exist.isPresent()) {
+        Optional<Teacher> existingTeacher = teacherRepository.findByCedula(newTeacher.getCedula());
+        if (existingTeacher.isPresent()) {
             throw new TeacherExistException();
         }
 
         String token = UUID.randomUUID().toString();
-        new_teacher.setToken(token);
+        newTeacher.setToken(token);
 
-        teacherRepository.persist(new_teacher);
-        logger.info("Teacher created successfully with Cedula: {}", new_teacher.getCedula());
+        teacherRepository.persist(newTeacher);
+        logger.info("Teacher created successfully with Cedula: {}", newTeacher.getCedula());
 
         return token;
     }
 
-    /*
-     * This method searches a teacher by document
+    /**
+     * Retrieves a teacher based on their document ID.
+     * 
+     * @param teacherDto the data transfer object containing the teacher's document
+     *                   ID
+     * @return a TeacherDto representing the found teacher
+     * @throws TeacherNotExistException if no teacher with the specified document is
+     *                                  found
      */
     @Override
     @PermitAll
@@ -105,8 +122,14 @@ public class TeacherService implements TeacherServiceInterface {
         return buildDtoFromTeacher(teacher.get());
     }
 
-    /*
-     * This method deletes a teacher
+    /**
+     * Deletes a teacher from the system.
+     * 
+     * @param teacherDto the data transfer object containing the teacher's document
+     *                   ID
+     * @return a confirmation message upon successful deletion
+     * @throws TeacherNotExistException if no teacher with the specified document is
+     *                                  found
      */
     @Override
     @RolesAllowed({ "teacher" })
@@ -127,8 +150,13 @@ public class TeacherService implements TeacherServiceInterface {
         return "The teacher has been deleted";
     }
 
-    /*
-     * This method updates a teacher's information
+    /**
+     * Updates the information of an existing teacher.
+     * 
+     * @param teacherDto the data transfer object containing updated teacher details
+     * @return a confirmation message upon successful update
+     * @throws TeacherNotExistException if no teacher with the specified document is
+     *                                  found
      */
     @Override
     @RolesAllowed({ "teacher" })
@@ -136,14 +164,14 @@ public class TeacherService implements TeacherServiceInterface {
     public String updateTeacher(TeacherDto teacherDto) {
         logger.info("Attempting to update teacher with Cedula: {}", teacherDto.cedula());
 
-        Optional<Teacher> teacher_optional = teacherRepository.findByCedula(teacherDto.cedula());
+        Optional<Teacher> teacherOptional = teacherRepository.findByCedula(teacherDto.cedula());
 
-        if (teacher_optional.isEmpty()) {
+        if (teacherOptional.isEmpty()) {
             logger.warn("Teacher with Cedula {} not found", teacherDto.cedula());
             throw new TeacherNotExistException();
         }
 
-        Teacher teacher = teacher_optional.get();
+        Teacher teacher = teacherOptional.get();
         teacher.setName(teacherDto.name());
         teacher.setEmail(teacherDto.email());
         teacher.setPassword(hashPassword(teacherDto.password()));
@@ -153,27 +181,48 @@ public class TeacherService implements TeacherServiceInterface {
         return "The teacher has been updated";
     }
 
-    /*
-     * This method builds a Teacher from a TeacherDto
+    /**
+     * Constructs a Teacher entity from the given TeacherDto, applying password
+     * hashing.
+     * 
+     * @param teacherDto the data transfer object containing teacher data
+     * @return a new Teacher entity
      */
     private Teacher buildTeacherFromDto(TeacherDto teacherDto) {
-        String password_hash = hashPassword(teacherDto.password());
-        return new Teacher(teacherDto.id(), teacherDto.cedula(), teacherDto.name(), teacherDto.email(), password_hash,
-                StatusAcountEnum.PENDING, "");
+        String hashedPassword = hashPassword(teacherDto.password());
+        return new Teacher(
+                teacherDto.id(),
+                teacherDto.cedula(),
+                teacherDto.name(),
+                teacherDto.email(),
+                hashedPassword,
+                StatusAcountEnum.PENDING,
+                "");
     }
 
-    /*
-     * This method applies a hash to the password
+    /**
+     * Applies bcrypt hashing to the provided plain text password.
+     * 
+     * @param password the plain text password
+     * @return the hashed password
      */
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
 
-    /*
-     * This method builds a TeacherDto from a Teacher
+    /**
+     * Builds a TeacherDto from the given Teacher entity, excluding the password.
+     * 
+     * @param teacher the Teacher entity
+     * @return a TeacherDto with corresponding data
      */
     private TeacherDto buildDtoFromTeacher(Teacher teacher) {
-        return new TeacherDto(teacher.getId(), teacher.getCedula(), teacher.getName(), teacher.getEmail(), "",
+        return new TeacherDto(
+                teacher.getId(),
+                teacher.getCedula(),
+                teacher.getName(),
+                teacher.getEmail(),
+                "",
                 teacher.getStatus());
     }
 }

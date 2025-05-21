@@ -15,9 +15,10 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * REST resource for managing program feedback.
- * Provides endpoints for creating, reading, updating, and deleting feedback
- * submitted by teachers for specific programs.
+ * REST resource for managing feedback on programming assignments.
+ * Provides endpoints to allow teachers to create, retrieve, update, and delete
+ * feedback
+ * for student-submitted programs.
  */
 @Path("/api/feedback")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,21 +26,24 @@ import java.util.List;
 public class FeedbackResource {
 
     /**
-     * Service for feedback operations.
+     * Service interface for feedback-related operations.
      */
     @Inject
     FeedbackServiceInterface feedbackService;
 
+    /**
+     * Service interface for program-related operations.
+     */
     @Inject
     ProgramServiceInterface programService;
 
     /**
-     * Endpoint to add new feedback for a specific program by a teacher.
+     * Creates new feedback for a specific program provided by a teacher.
      *
-     * @param programId ID of the program receiving feedback
-     * @param teacherId ID of the teacher providing feedback
-     * @param dto       DTO containing the feedback comment
-     * @return Response with created feedback information
+     * @param programId the ID of the program being reviewed
+     * @param teacherId the ID of the teacher giving the feedback
+     * @param dto       the feedback content to be saved
+     * @return a response containing the created feedback data
      */
     @POST
     @Path("/programa/{programId}/profesor/{teacherId}")
@@ -48,7 +52,6 @@ public class FeedbackResource {
             @PathParam("teacherId") Integer teacherId,
             @Valid FeedbackDto dto) {
 
-        // Create a new DTO with IDs from the URL
         FeedbackDto nuevoDto = new FeedbackDto(
                 null,
                 dto.comment(),
@@ -60,10 +63,10 @@ public class FeedbackResource {
     }
 
     /**
-     * Endpoint to retrieve all feedback for a specific program.
+     * Retrieves all feedback associated with a specific program.
      *
-     * @param programId ID of the program
-     * @return Response with list of feedback for the program
+     * @param programId the ID of the program whose feedback is being requested
+     * @return a response containing a list of feedback entries
      */
     @GET
     @Path("/programa/{programId}")
@@ -73,13 +76,13 @@ public class FeedbackResource {
     }
 
     /**
-     * Endpoint to update existing feedback for a program.
+     * Updates an existing feedback entry for a given program and teacher.
      *
-     * @param feedbackId ID of the feedback to update
-     * @param programId  ID of the program
-     * @param teacherId  ID of the teacher
-     * @param dto        DTO containing the updated comment
-     * @return Response with updated feedback information
+     * @param feedbackId the ID of the feedback entry to update
+     * @param programId  the ID of the associated program
+     * @param teacherId  the ID of the teacher who provided the feedback
+     * @param dto        the updated feedback comment
+     * @return a response with the updated feedback information
      */
     @PUT
     @Path("/{feedbackId}/programa/{programId}/profesor/{teacherId}")
@@ -88,6 +91,7 @@ public class FeedbackResource {
             @PathParam("programId") Long programId,
             @PathParam("teacherId") Integer teacherId,
             @Valid FeedbackDto dto) {
+
         FeedbackDto nuevoDto = new FeedbackDto(
                 null,
                 dto.comment(),
@@ -99,24 +103,28 @@ public class FeedbackResource {
     }
 
     /**
-     * Endpoint to delete existing feedback.
+     * Deletes a feedback entry by its ID.
      *
-     * @param feedbackId ID of the feedback to delete
-     * @return Response with confirmation message
+     * @param feedbackId the ID of the feedback to be deleted
+     * @return a response confirming successful deletion
      */
     @DELETE
     @Path("/{feedbackId}")
     @Transactional
     public Response eliminarFeedback(@PathParam("feedbackId") Long feedbackId) {
         feedbackService.eliminarFeedback(feedbackId);
-        return Response.ok("Comentario eliminado exitosamente").build();
+        return Response.ok("Feedback successfully deleted").build();
     }
 
+    /**
+     * Retrieves all programs available in the system.
+     *
+     * @return a response containing the list of all registered programs
+     */
     @GET
     @Path("/programas")
     public Response obtenerTodosLosProgramas() {
         List<ProgramDto> programas = programService.listPrograms();
         return Response.ok(programas).build();
     }
-
 }

@@ -1,9 +1,14 @@
 package co.uniquindio.ingesis.exception;
 
-public class StudentNotExistException extends RuntimeException{
+/**
+ * Custom runtime exception thrown when the specified student does not exist.
+ */
+public class StudentNotExistException extends RuntimeException {
 
-    public StudentNotExistException(){
-        super("the student don't exist");
+    /**
+     * Constructs a new StudentNotExistException with a default error message.
+     */
+    public StudentNotExistException() {
+        super("The student does not exist");
     }
-
 }

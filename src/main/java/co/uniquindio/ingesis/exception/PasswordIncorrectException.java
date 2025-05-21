@@ -1,8 +1,14 @@
 package co.uniquindio.ingesis.exception;
 
-public class PasswordIncorrectException extends Exception{
-    
-    public PasswordIncorrectException(){
-        super("the password is incorrect");
+/**
+ * Custom exception thrown when the provided password is incorrect.
+ */
+public class PasswordIncorrectException extends Exception {
+
+    /**
+     * Constructs a new PasswordIncorrectException with a default error message.
+     */
+    public PasswordIncorrectException() {
+        super("The password is incorrect");
     }
 }

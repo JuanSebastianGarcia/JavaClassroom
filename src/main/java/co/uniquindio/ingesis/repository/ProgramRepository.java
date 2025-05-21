@@ -15,26 +15,51 @@ public class ProgramRepository implements PanacheRepository<Program> {
     @PersistenceContext
     EntityManager entityManager;
 
+    /**
+     * Returns the EntityManager instance.
+     */
     public EntityManager getEntityManager() {
         return entityManager;
     }
 
-    // Método actualizado para buscar por código y studentId
+    /**
+     * Updated method to find a program by its code and the student's ID.
+     * 
+     * @param code      program code
+     * @param studentId ID of the student
+     * @return Optional containing the found program or empty if not found
+     */
     public Optional<Program> findByCodeAndStudentId(String code, Integer studentId) {
         return find("code = ?1 and studentId = ?2", code, studentId).firstResultOptional();
     }
 
-    // Método para buscar todos los programas de un estudiante
+    /**
+     * Finds all programs belonging to a specific student.
+     * 
+     * @param studentId ID of the student
+     * @return list of programs of the student
+     */
     public List<Program> findByStudentId(Integer studentId) {
         return list("studentId", studentId);
     }
 
-    // Mantén el método original si aún lo necesitas (opcional)
+    /**
+     * Optional: Finds a program by its code only.
+     * 
+     * @param code program code
+     * @return Optional containing the found program or empty if not found
+     */
     public Optional<Program> findByCode(String code) {
         return find("code", code).firstResultOptional();
     }
 
-    // Método para verificar si un programa existe para un estudiante específico
+    /**
+     * Checks if a program exists for a specific student by program code.
+     * 
+     * @param code      program code
+     * @param studentId ID of the student
+     * @return true if exists, false otherwise
+     */
     public boolean existsByCodeAndStudentId(String code, Integer studentId) {
         return count("code = ?1 and studentId = ?2", code, studentId) > 0;
     }

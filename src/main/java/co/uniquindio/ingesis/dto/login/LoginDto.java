@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO (Data Transfer Object) for user authentication.
  * 
- * <p>
  * This record stores login details, ensuring that all fields
  * are required and cannot be empty.
- * </p>
  *
  * @param email    The user's email address (required).
  * @param password The user's password (required).
@@ -30,6 +28,4 @@ public record LoginDto(
         String role
 
 ) {
-    // No additional methods needed as records automatically generate getters,
-    // equals, hashCode, and toString.
 }

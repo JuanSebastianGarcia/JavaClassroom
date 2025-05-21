@@ -9,7 +9,7 @@ import co.uniquindio.ingesis.exception.RoleUnknownException;
 /**
  * Service interface for handling user authentication.
  * 
- * <p>This interface defines methods related to user login.</p>
+ * This interface defines methods related to user login.
  */
 public interface AuthServiceInterface {
 
@@ -18,9 +18,10 @@ public interface AuthServiceInterface {
      * 
      * @param loginDto The user's login information (email and password).
      * @return A string containing a token or authentication message.
-     * @throws RoleUnknownException 
-     * @throws PasswordIncorrectException 
-     * @throws AccountNotVerifiedException 
+     * @throws RoleUnknownException
+     * @throws PasswordIncorrectException
+     * @throws AccountNotVerifiedException
      */
-    TokenResponseDto loginUser(LoginDto loginDto) throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException;
+    TokenResponseDto loginUser(LoginDto loginDto)
+            throws RoleUnknownException, PasswordIncorrectException, AccountNotVerifiedException;
 }

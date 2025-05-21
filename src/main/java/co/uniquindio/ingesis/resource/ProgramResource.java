@@ -22,8 +22,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Recurso REST para la gestión de programas.
- * Proporciona endpoints para crear, consultar, actualizar y eliminar programas.
+ * REST resource for managing student programs.
+ * This resource provides endpoints to upload, retrieve, update, delete,
+ * share, and download programs for a specific student.
  */
 @Path("/student/{studentId}/program")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,6 +41,16 @@ public class ProgramResource {
     @Inject
     ProgramRepository programRepository;
 
+    /**
+     * Uploads a new program for a student.
+     *
+     * @param studentId      ID of the student
+     * @param zipInputStream ZIP file containing the program's code
+     * @param code           Unique code of the program
+     * @param name           Name of the program
+     * @param description    Description of the program
+     * @return A success message or an error response
+     */
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -58,10 +69,17 @@ public class ProgramResource {
         }
     }
 
+    /**
+     * Retrieves a specific program for a student by its code.
+     *
+     * @param studentId ID of the student
+     * @param code      Code of the program
+     * @return The program details or a not found response
+     */
     @GET
     @Path("/{code}")
     public Response getProgram(
-            @PathParam("studentId") Integer studentId, // Añadido el parámetro
+            @PathParam("studentId") Integer studentId,
             @PathParam("code") String code) {
         try {
             ProgramDto program = programService.getProgram(new ProgramDto(0, code, "", "", studentId, false));
@@ -71,11 +89,21 @@ public class ProgramResource {
         }
     }
 
+    /**
+     * Updates an existing program for a student.
+     *
+     * @param studentId      ID of the student
+     * @param code           Code of the program to update
+     * @param zipInputStream New ZIP file containing updated program code
+     * @param name           New name of the program
+     * @param description    New description of the program
+     * @return A success message or an error response
+     */
     @PUT
     @Path("/update/{code}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response updateProgram(
-            @PathParam("studentId") Integer studentId, // Añadido el parámetro
+            @PathParam("studentId") Integer studentId,
             @PathParam("code") String code,
             @FormParam("file") InputStream zipInputStream,
             @FormParam("name") String name,
@@ -89,10 +117,17 @@ public class ProgramResource {
         }
     }
 
+    /**
+     * Deletes a program for a student.
+     *
+     * @param studentId ID of the student
+     * @param code      Code of the program to delete
+     * @return A success message or an error response
+     */
     @DELETE
     @Path("/{code}")
     public Response deleteProgram(
-            @PathParam("studentId") Integer studentId, // Añadido el parámetro
+            @PathParam("studentId") Integer studentId,
             @PathParam("code") String code) {
         try {
             String response = programService.deleteProgram(new ProgramDto(0, code, "", "", studentId, false));
@@ -104,6 +139,12 @@ public class ProgramResource {
 
     private static final String BASE_DIR = "/deployments/programs";
 
+    /**
+     * Downloads the program folder as a ZIP file.
+     *
+     * @param programCode Code of the program
+     * @return The zipped folder or a not found/error response
+     */
     @GET
     @Path("/{programCode}/download")
     @Produces("application/zip")
@@ -112,7 +153,7 @@ public class ProgramResource {
 
         if (!programFolder.exists() || !programFolder.isDirectory()) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("No se encontró la carpeta del programa").build();
+                    .entity("Program folder not found").build();
         }
 
         try {
@@ -120,8 +161,7 @@ public class ProgramResource {
 
             try (FileOutputStream fos = new FileOutputStream(zipFile);
                     ZipOutputStream zos = new ZipOutputStream(fos)) {
-
-                zipFolderRecursive(programFolder, programFolder, zos); // 👈 Recursivo
+                zipFolderRecursive(programFolder, programFolder, zos);
             }
 
             return Response.ok(zipFile)
@@ -131,17 +171,23 @@ public class ProgramResource {
         } catch (IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error al crear el archivo zip").build();
+                    .entity("Error generating zip file").build();
         }
     }
 
-    // 🔁 Método auxiliar para comprimir con subdirectorios
+    /**
+     * Recursively compresses a folder and its subfolders into a ZIP stream.
+     *
+     * @param baseFolder  Base folder to calculate relative paths
+     * @param currentFile Current file or folder to process
+     * @param zos         Output ZIP stream
+     */
     private void zipFolderRecursive(File baseFolder, File currentFile, ZipOutputStream zos) throws IOException {
         for (File file : currentFile.listFiles()) {
             if (file.isDirectory()) {
                 zipFolderRecursive(baseFolder, file, zos);
             } else {
-                String relativePath = baseFolder.toURI().relativize(file.toURI()).getPath(); // Estructura de carpetas
+                String relativePath = baseFolder.toURI().relativize(file.toURI()).getPath();
                 try (FileInputStream fis = new FileInputStream(file)) {
                     ZipEntry zipEntry = new ZipEntry(relativePath);
                     zos.putNextEntry(zipEntry);
@@ -157,6 +203,14 @@ public class ProgramResource {
         }
     }
 
+    /**
+     * Updates the "shared" status of a program.
+     *
+     * @param studentId ID of the student
+     * @param code      Code of the program
+     * @param shared    New shared status
+     * @return A success message or a not found response
+     */
     @PUT
     @Transactional
     @Path("/{code}/share")
@@ -180,11 +234,15 @@ public class ProgramResource {
         }
     }
 
+    /**
+     * Retrieves a list of all programs marked as shared.
+     *
+     * @return List of shared program DTOs
+     */
     @GET
     @Transactional
     @Path("/shared")
     public List<ProgramDto> getSharedPrograms() {
         return programService.listSharedPrograms();
     }
-
 }

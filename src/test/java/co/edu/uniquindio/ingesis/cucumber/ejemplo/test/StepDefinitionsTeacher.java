@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StepDefinitionsTeacher {
 
-    private final String BASE_URL = "http://quarkus-app:8080/teacher";
+    private final String BASE_URL = "http://localhost:8081/teacher";
     private final String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJicmFoaWFuZDMyMDUxOUBnbWFpbC5jb20iLCJpc3MiOiJjbGFzc3Jvb20iLCJpYXQiOjE3NDc3NjE4NDcsImV4cCI6MTc1MDM1Mzg0Nywicm9sZSI6InRlYWNoZXIiLCJjZWR1bGEiOiIxMjM0NTY3ODkzOSIsImlkIjoxOX0.sFf-Yh5wF_CEa6I9FwWTxZoCZZc0WnlEDHPwZRnVIlI"; // Reemplaza
                                                                                                                                                                                                                                                                                                 // con
                                                                                                                                                                                                                                                                                                 // tu

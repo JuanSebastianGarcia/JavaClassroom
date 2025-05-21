@@ -4,46 +4,29 @@ import co.uniquindio.ingesis.model.enumerations.StatusAcountEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record TeacherDto (   
-/*
- * student id
+/**
+ * Data Transfer Object (DTO) representing a Teacher.
+ *
+ * @param id       the unique identifier of the teacher
+ * @param cedula   the national identification number of the teacher
+ * @param name     the full name of the teacher
+ * @param email    the email address of the teacher
+ * @param password the teacher's password (minimum length: 12 characters)
+ * @param status   the account status of the teacher
  */
-Integer id,
+public record TeacherDto(
 
-/*
- * student cedula
- */
-@NotBlank
-String cedula,
+        Integer id,
 
+        @NotBlank String cedula,
 
-/*
- * student name
- */
-@NotBlank
-String name,
+        @NotBlank String name,
 
+        @NotBlank String email,
 
-/*
- * student email
- */
-@NotBlank
-String email,
+        @NotBlank @Size(min = 12) String password,
 
+        StatusAcountEnum status
 
-/*
- * student password
- */
-@NotBlank
-@Size(min = 12)
-String password,
-
-        
-/*
-* student status
-*/
-StatusAcountEnum status
-
-)  {
-
+) {
 }

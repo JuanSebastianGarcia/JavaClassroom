@@ -33,20 +33,27 @@ public class VerificationService implements VerificationServiceInterface {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Sends a verification email with a token to the specified email address.
+     * 
+     * @param email the email address to send the verification to
+     * @param token the verification token to include in the email
+     * @return the token sent
+     */
     @Override
     public String sendVerificationEmail(String email, String token) {
 
         MensajeDTO mensaje = new MensajeDTO(
                 "EMAIL",
                 email,
-                "Tu código de verificación es: " + token,
-                "Verifica tu cuenta");
+                "Your verification code is: " + token,
+                "Verify your account");
 
         try {
             String json = objectMapper.writeValueAsString(mensaje);
-            System.out.println("Enviando mensaje: " + json);
+            System.out.println("Sending message: " + json);
             mensajeEmitter.send(json);
-            System.out.println("Mensaje enviado " + json);
+            System.out.println("Message sent " + json);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,34 +62,49 @@ public class VerificationService implements VerificationServiceInterface {
         return token;
     }
 
+    /**
+     * Sends a notification email informing the user about a new comment added
+     * to their program.
+     * 
+     * @param email       the email address to notify
+     * @param programName the name of the program that received a new comment
+     */
     @Override
     public void sendCommentNotification(String email, String programName) {
 
         MensajeDTO mensaje = new MensajeDTO(
                 "EMAIL",
                 email,
-                "Se ha añadido un nuevo comentario a tu programa: " + programName,
-                "Nuevo comentario en tu programa");
+                "A new comment has been added to your program: " + programName,
+                "New comment on your program");
 
         try {
             String json = objectMapper.writeValueAsString(mensaje);
-            System.out.println("Enviando notificación de comentario: " + json);
+            System.out.println("Sending comment notification: " + json);
             mensajeEmitter.send(json);
-            System.out.println("Notificación enviada " + json);
+            System.out.println("Notification sent " + json);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Verifies a user's account by matching the provided verification code with the
+     * token stored for the user (either student or teacher). If the codes match,
+     * the user's account status is set to ACTIVE.
+     * 
+     * @param email            the email address of the user to verify
+     * @param verificationCode the verification code provided by the user
+     * @throws IllegalArgumentException if the verification code is invalid
+     */
     @Override
     @Transactional
     public void verifyAccount(String email, String verificationCode) {
         Optional<Student> student = studentRepository.findByEmail(email);
         if (student.isPresent()) {
-            System.out.println("Código de verificación para estudiante: " + verificationCode); // Imprimir el código
-            System.out.println("Token almacenado para estudiante: " + student.get().getToken()); // Imprimir token
-                                                                                                 // almacenado
+            System.out.println("Verification code for student: " + verificationCode);
+            System.out.println("Stored token for student: " + student.get().getToken());
             if (student.get().getToken().equals(verificationCode)) {
                 student.get().setStatus(StatusAcountEnum.ACTIVE);
                 studentRepository.persist(student.get());
@@ -92,9 +114,8 @@ public class VerificationService implements VerificationServiceInterface {
 
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
         if (teacher.isPresent()) {
-            System.out.println("Código de verificación para profesor: " + verificationCode); // Imprimir el código
-            System.out.println("Token almacenado para profesor: " + teacher.get().getToken()); // Imprimir token
-                                                                                               // almacenado
+            System.out.println("Verification code for teacher: " + verificationCode);
+            System.out.println("Stored token for teacher: " + teacher.get().getToken());
             if (teacher.get().getToken().equals(verificationCode)) {
                 teacher.get().setStatus(StatusAcountEnum.ACTIVE);
                 teacherRepository.persist(teacher.get());

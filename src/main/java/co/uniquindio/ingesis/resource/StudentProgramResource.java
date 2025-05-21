@@ -16,7 +16,8 @@ import java.util.List;
 
 /**
  * REST resource for managing student program relationships.
- * Provides endpoints for tracking program resolution status for students.
+ * Provides endpoints for tracking and reporting program resolution status for
+ * students.
  */
 @Path("/student-program")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,12 +25,12 @@ import java.util.List;
 public class StudentProgramResource {
 
     /**
-     * Service for student program operations.
+     * Service for handling student-program interactions.
      */
     private final StudentProgramServiceInterface studentProgramService;
 
     /**
-     * Constructor with dependency injection for the student program service.
+     * Constructor for injecting the student program service.
      *
      * @param studentProgramService Service for student program operations
      */
@@ -38,13 +39,13 @@ public class StudentProgramResource {
     }
 
     /**
-     * Endpoint to mark a program as resolved or not resolved for a specific
-     * student.
+     * Marks a specific program as resolved or not resolved for a student by a
+     * teacher.
      *
      * @param studentId   ID of the student
      * @param programId   ID of the program
-     * @param requestBody JSON map containing the resolved status (key: "resolved",
-     *                    value: boolean)
+     * @param teacherId   ID of the teacher performing the operation
+     * @param requestBody JSON map containing the "resolved" boolean value
      * @return Response with confirmation message
      */
     @POST
@@ -61,40 +62,42 @@ public class StudentProgramResource {
     }
 
     /**
-     * Endpoint to check if a program is marked as resolved for a specific student.
+     * Checks if a specific program has been marked as resolved for a student.
      *
      * @param studentId ID of the student
      * @param programId ID of the program
-     * @return Response with boolean indicating if the program is resolved
+     * @return Response containing true if resolved, false otherwise
      */
     @GET
     @Path("/is-resolved/{studentId}/{programId}")
-    public Response isResolved(@PathParam("studentId") Integer studentId,
+    public Response isResolved(
+            @PathParam("studentId") Integer studentId,
             @PathParam("programId") Integer programId) {
         boolean resolved = studentProgramService.isResolved(studentId, programId);
         return Response.ok(resolved).build();
     }
 
     /**
-     * Endpoint to delete a program resolution record for a specific student.
+     * Deletes the program resolution record for a student.
      *
      * @param studentId ID of the student
      * @param programId ID of the program
-     * @return Response with confirmation message
+     * @return Response with a confirmation message
      */
     @DELETE
     @Path("/mark-resolved/{studentId}/{programId}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response deleteProgramResolution(@PathParam("studentId") Long studentId,
+    public Response deleteProgramResolution(
+            @PathParam("studentId") Long studentId,
             @PathParam("programId") Long programId) {
         studentProgramService.deleteProgramResolution(studentId, programId);
         return Response.ok("Program resolution deleted successfully.").build();
     }
 
     /**
-     * Endpoint to retrieve a summary report of resolved programs per student.
+     * Retrieves a summary report of resolved programs grouped by student.
      *
-     * @return Response with a list of ResolvedProgramReportDto
+     * @return Response containing a list of {@link ResolvedProgramReportDto}
      */
     @GET
     @Path("/report/resolved-summary")
@@ -103,9 +106,10 @@ public class StudentProgramResource {
     }
 
     /**
-     * Endpoint to export the resolved program report as a PDF file.
+     * Exports the resolved program summary report to a PDF file.
      *
-     * @return PDF file containing the resolved programs summary
+     * @return Response with a downloadable PDF containing the report,
+     *         or error if generation fails
      */
     @GET
     @Path("/report/resolved-summary/pdf")
@@ -119,17 +123,14 @@ public class StudentProgramResource {
             PdfWriter.getInstance(document, baos);
             document.open();
 
-            // Agregamos título
             document.add(new Paragraph("Resolved Program Report"));
-            document.add(new Paragraph(" ")); // línea vacía
+            document.add(new Paragraph(" ")); // Empty line
 
-            // Crear tabla de 3 columnas
             PdfPTable table = new PdfPTable(3);
             table.addCell("Student ID");
             table.addCell("Student Name");
             table.addCell("Resolved Count");
 
-            // Llenar la tabla
             for (ResolvedProgramReportDto dto : report) {
                 table.addCell(dto.studentId().toString());
                 table.addCell(dto.studentName());
@@ -149,6 +150,11 @@ public class StudentProgramResource {
         }
     }
 
+    /**
+     * Retrieves a list of all available programs in the system.
+     *
+     * @return Response containing the list of programs
+     */
     @GET
     @Path("/programs")
     public Response getAllPrograms() {

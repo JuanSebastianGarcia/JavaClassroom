@@ -28,19 +28,27 @@ public class JwtFilter implements ContainerRequestFilter {
     @ConfigProperty(name = "jwt.secret.key")
     private String SECRET_KEY;
 
+    /**
+     * Intercepts incoming HTTP requests to perform JWT authentication.
+     * Allows specific endpoints to bypass authentication.
+     *
+     * @param requestContext the context of the HTTP request
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String path = requestContext.getUriInfo().getPath();
-        String method = requestContext.getMethod(); // Obtener el método HTTP de la solicitud
+        String method = requestContext.getMethod();
         System.out.println("Request Intercepted Path: '" + path + "'");
 
-        // Excluir todos los endpoints bajo "/program"
+        // Skip JWT validation for all endpoints under "/program"
         if (path.startsWith("program") || path.startsWith("/program")) {
             System.out.println("Skipping JWT check for path: " + path);
-            return; // No hacer nada y continuar con la ejecución normal
+            return;
         }
 
-        // Excluir rutas como /verify, /auth y las de los profesores
+        // Skip JWT validation for specific public routes: /verify, /auth, and some
+        // teacher routes
         if (path.equals("/verify") || path.startsWith("/verify?") ||
                 path.equals("/auth") || path.startsWith("/auth/") ||
                 (path.equals("/teacher") && ("POST".equals(method) || "GET".equals(method)))) {
@@ -48,28 +56,31 @@ public class JwtFilter implements ContainerRequestFilter {
             return;
         }
 
-        // Si llega aquí, significa que está pidiendo autenticación
+        // For other requests, perform JWT validation
         System.out.println("Unauthorized request to: " + path);
         String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
+        // Check if the Authorization header is present and correctly formatted
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("Unauthorized request to: " + path);
             abortWithUnauthorized(requestContext, "Missing or invalid Authorization header");
             return;
         }
 
-        String token = authHeader.substring(7); // Eliminar "Bearer " del encabezado
-        System.out.println("Received token: " + token); // Imprimir el token para verificar si es correcto
+        // Extract JWT token from the Authorization header
+        String token = authHeader.substring(7);
+        System.out.println("Received token: " + token);
 
         try {
-            Claims claims = validateToken(token); // Validar el token
-            System.out.println("Token validated. Claims: " + claims); // Imprimir todas las claims del token
+            // Validate the JWT token and extract claims
+            Claims claims = validateToken(token);
+            System.out.println("Token validated. Claims: " + claims);
 
-            // Asignar los valores de claims al contexto de la solicitud
+            // Set extracted claims as request properties for downstream use
             requestContext.setProperty("userEmail", claims.getSubject());
             requestContext.setProperty("userRole", claims.get("role", String.class));
             requestContext.setProperty("userCedula", claims.get("cedula", String.class));
-            Integer userId = claims.get("id", Integer.class); // ✅ Correcto
+            Integer userId = claims.get("id", Integer.class);
             requestContext.setProperty("userId", userId);
 
         } catch (ExpiredJwtException e) {
@@ -81,10 +92,15 @@ public class JwtFilter implements ContainerRequestFilter {
         }
     }
 
-    // Método para validar el token JWT
+    /**
+     * Validates the JWT token using the configured secret key.
+     *
+     * @param token the JWT token string to validate
+     * @return Claims extracted from the token if valid
+     */
     private Claims validateToken(String token) {
-        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY); // Obtener la clave secreta
-        System.out.println("Secret key used for validation: " + SECRET_KEY); // Verificar la clave secreta
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+        System.out.println("Secret key used for validation: " + SECRET_KEY);
         SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
 
         return Jwts.parserBuilder()
@@ -94,7 +110,13 @@ public class JwtFilter implements ContainerRequestFilter {
                 .getBody();
     }
 
-    // Método para abortar la solicitud con respuesta UNAUTHORIZED
+    /**
+     * Aborts the HTTP request by responding with an UNAUTHORIZED status and an
+     * error message.
+     *
+     * @param requestContext the context of the HTTP request
+     * @param message        the error message to include in the response body
+     */
     private void abortWithUnauthorized(ContainerRequestContext requestContext, String message) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                 .entity("{\"error\": \"" + message + "\"}")
