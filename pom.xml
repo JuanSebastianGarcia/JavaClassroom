@@ -362,20 +362,29 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
                 <executions>
-                    <!-- Habilita el agente de Jacoco -->
+                    <!-- Prepara el agente -->
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- Genera el reporte después de las pruebas -->
+
+                    <!-- Genera reporte con XML -->
                     <execution>
                         <id>report</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                            <!-- Esta es la forma correcta para la versión 0.8.10 -->
+                            <formats>
+                                <format>XML</format>
+                                <format>HTML</format>
+                            </formats>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
