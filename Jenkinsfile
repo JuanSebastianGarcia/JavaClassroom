@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'M3' // Nombre del Maven configurado en Jenkins
+        maven 'M3' 
     }
 
     environment {
@@ -34,7 +34,8 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh './mvnw sonar:sonar'
+                sh './mvnw sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
+
                 }
             }
         }

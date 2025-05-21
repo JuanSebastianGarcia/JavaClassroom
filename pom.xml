@@ -275,16 +275,6 @@
         <scope>test</scope>
     </dependency>
 
-
-
-        
-
-
-
-
-
-
-
     </dependencies>
 
     <!-- Build configuration -->
@@ -307,6 +297,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Maven Compiler plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -317,13 +308,13 @@
                     <release>17</release>
                 </configuration>
             </plugin>
+
+            <!-- Sonar plugin -->
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>3.9.1.2184</version>
             </plugin>
-
-
 
             <!-- Maven Surefire plugin -->
             <plugin>
@@ -334,15 +325,16 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
-                            <includes>
-                                <include>**/*Test.java</include>
-                                <include>**/*Tests.java</include>
-                                <include>**/Test*.java</include>
-                                <include>**/*CucumberTest.java</include>
-                                <include>**/CucumberTestSuite.java</include>
-                            </includes>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/Test*.java</include>
+                        <include>**/*CucumberTest.java</include>
+                        <include>**/CucumberTestSuite.java</include>
+                    </includes>
                 </configuration>
             </plugin>
+
             <!-- Maven Failsafe plugin -->
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -363,9 +355,32 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+
+            <!-- Jacoco plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <executions>
+                    <!-- Habilita el agente de Jacoco -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- Genera el reporte después de las pruebas -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
     <!-- Profiles -->
     <profiles>
         <!-- Native profile -->
